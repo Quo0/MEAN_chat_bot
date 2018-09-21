@@ -1,19 +1,28 @@
 <div class="chat-wrapper">
-    <div class="chat-header">
+    <div class="chat-header"
+      ng-mouseleave="chatCtrl.hideMenu()"
+      ng-mouseover="chatCtrl.resetHoverOverMenuTimer()">
       <h2>{{chatCtrl.User.name}}</h2>
-      <div id="search-field">
-        <input type="text"
-          ng-model="chatCtrl.searchQuery"
-          ng-model-options="{ debounce: 1500 }"
-          ng-change="chatCtrl.onSearchQueryChange()"
-          ng-show="chatCtrl.showSearch">
-        <label id="searchButton"
-          ng-class="{notSearching: true, searching: chatCtrl.showSearch}"
-          ng-click="chatCtrl.clearSearchQuery()">
-          <input type="checkbox" ng-model="chatCtrl.showSearch"></input>
-        </label>
+      <div id="menu">
+        <div class="action-buttons">
+          <div id="search-field">
+            <input type="text"
+            ng-model="chatCtrl.searchQuery"chatCtrl.hoveredOverMenuTime = 0
+            ng-model-options="{ debounce: 1500 }"
+            ng-change="chatCtrl.onSearchQueryChange()"
+            ng-show="chatCtrl.searchFieldShown">
+            <div id="searchButton"
+              ng-class="{notSearching: true, searching: chatCtrl.searchFieldShown}"
+              ng-click="chatCtrl.clearSearchQuery()">
+              <!-- <input type="checkbox" ng-model="chatCtrl.searchFieldShown"></input> -->
+            </div>
+          </div>
+          <button type="button" ng-click="chatCtrl.logOut()">Log out</button>
+        </div>
+        <div id="burger" ng-mouseover="chatCtrl.showMenu()">
+          <div class="line"></div>
+        </div>
       </div>
-      <button type="button" ng-click="chatCtrl.logOut()">Log out</button>
     </div>
     <div class="chat-window">
       <div id="messages-window">
