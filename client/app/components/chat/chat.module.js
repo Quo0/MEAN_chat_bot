@@ -475,20 +475,17 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       burger.classList.add("burger-hovered");
       const promice = (()=>{
         this.menuBeenHovered = true;
-        console.log(1);
         return $timeout(()=>{
           burger.style.opacity = 0;
         }, 1500)
       })();
       promice
         .then(()=>{
-          console.log(2);
           return $timeout(()=>{
             // wait a bit before the hiding burger
           }, 200)
         })
         .then(()=>{
-          console.log(3);
           burger.style.display = "none";
           actionButtons.style.display = "flex";
         })
@@ -532,7 +529,6 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
 
   function clearSearchQuery(){
     this.searchFieldShown = !this.searchFieldShown
-    console.log(this.searchFieldShown);
     if(this.searchQuery){
       this.searchQuery = "";
       this.latestMessages = [];
