@@ -18,6 +18,9 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   if(!currentUser){ window.location.hash = "#/welcome"}
   //DOM
   const messagesWindow = document.getElementById("messages-window");
+  const chatHeader = document.querySelector(".chat-header");
+  const actionButtons = chatHeader.querySelector(".action-buttons");
+  const burger = chatHeader.querySelector("#burger");
   //
   const API_KEY = "16f021a3d7ed41c9a205cd87a7c877a5";
   //
@@ -27,6 +30,8 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   }
   let inactivityTime = 0;
   let inactivityTimer;
+  let hoveredOverMenuTime = 0;
+  let hoveredOverMenuTimer;
   this.User = currentUser;
   this.latestMessages = [];
   this.oldMessages = [];
@@ -39,7 +44,10 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   this.clearSearchQuery = clearSearchQuery;
   this.onTextAdded = onTextAdded;
   this.scrollToNewMessages = scrollToNewMessages;
+  this.showMenu = showMenu;
+  this.hideMenu = hideMenu;
   this.logOut = logOut;
+  this.resetHoverOverMenuTimer = resetHoverOverMenuTimer;
   //
   this.getLatestMessages = getLatestMessages;
   this.getSomePreviousMessages = getSomePreviousMessages;
@@ -137,6 +145,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       })
     } else {
       this.getLatestMessages();
+      hideMenu.call(this);
     }
   }
 
@@ -461,6 +470,60 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     forceScrollToTheBottom();
   }
 
+  function showMenu(){
+    if(!this.menuBeenHovered){
+      burger.classList.add("burger-hovered");
+      const promice = (()=>{
+        this.menuBeenHovered = true;
+        console.log(1);
+        return $timeout(()=>{
+          burger.style.opacity = 0;
+        }, 1500)
+      })();
+      promice
+        .then(()=>{
+          console.log(2);
+          return $timeout(()=>{
+            // wait a bit before the hiding burger
+          }, 200)
+        })
+        .then(()=>{
+          console.log(3);
+          burger.style.display = "none";
+          actionButtons.style.display = "flex";
+        })
+        .catch(err=>{
+          console.error(3);
+        })
+    }
+  }
+  function hideMenu(){
+    if(this.menuBeenHovered){
+      hoveredOverMenuTimer = $interval(()=>{
+        hoveredOverMenuTime ++;
+        if(hoveredOverMenuTime > 3){
+          if(!this.searchQuery){
+            this.menuBeenHovered = false;
+            this.searchFieldShown = false;
+            burger.classList.remove("burger-hovered");
+            burger.classList.add("burger-showed-back");
+            burger.style.opacity = 1;
+            burger.style.display = "block";
+            actionButtons.style.display = "none";
+          } else {
+            hoveredOverMenuTime = 0;
+          }
+          $interval.cancel(hoveredOverMenuTimer);
+        }
+      },1000)
+    }
+  }
+
+  function resetHoverOverMenuTimer(){
+    hoveredOverMenuTime = 0;
+    $interval.cancel(hoveredOverMenuTimer);
+  }
+
   function logOut(){
     $interval.cancel(inactivityTimer);
     localStorage.clear();
@@ -468,6 +531,8 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   }
 
   function clearSearchQuery(){
+    this.searchFieldShown = !this.searchFieldShown
+    console.log(this.searchFieldShown);
     if(this.searchQuery){
       this.searchQuery = "";
       this.latestMessages = [];
@@ -526,24 +591,19 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         !this.nothingToLoad &&
         !this.loadingInProgress ){
       const topUl = document.querySelector("#old-messages") || latestUl;
-      console.log(topUl);
       const lastList = topUl.querySelector("li");
       $timeout(()=>{
-        console.log("step1");
         this.loadingInProgress = true;
         return $timeout(()=>{},0);
       }, 0)
       .then(()=>{
-        console.log("step2");
         return $timeout(()=>{
           this.getSomePreviousMessages();
-          console.log(lastList);
           lastList.scrollIntoView()
           messagesWindow.scrollTop = messagesWindow.scrollTop - 14 // for smoothing(1em - 2px);
         } , 2500)
       })
       .then(()=>{
-        console.log("step3");
         return $timeout(()=>{
           messagesWindow.scrollTop = messagesWindow.scrollTop - 80
         } , 150)

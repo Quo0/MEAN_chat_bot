@@ -15,7 +15,6 @@ angular
           avatar: fromWho === "BOT" ? "client/app/components/chat/img/3_bf.jpg" : currentUser.avatar
         })
       }
-      console.log(req);
       return $http(req)
     }
   }]);
