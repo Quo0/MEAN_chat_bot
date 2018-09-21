@@ -1,0 +1,71 @@
+<div class="chat-wrapper">
+    <div class="chat-header">
+      <h2>{{chatCtrl.User.name}}</h2>
+      <div id="search-field">
+        <input type="text"
+          ng-model="chatCtrl.searchQuery"
+          ng-model-options="{ debounce: 1500 }"
+          ng-change="chatCtrl.onSearchQueryChange()"
+          ng-show="chatCtrl.showSearch">
+        <label id="searchButton"
+          ng-class="{notSearching: true, searching: chatCtrl.showSearch}"
+          ng-click="chatCtrl.clearSearchQuery()">
+          <input type="checkbox" ng-model="chatCtrl.showSearch"></input>
+        </label>
+      </div>
+      <button type="button" ng-click="chatCtrl.logOut()">Log out</button>
+    </div>
+    <div class="chat-window">
+      <div id="messages-window">
+        <div id="downloading" ng-show="chatCtrl.loadingInProgress">
+          <h4>downloading
+            <span class="dot dot1">.</span>
+            <span class="dot dot2">.</span>
+            <span class="dot dot3">.</span>
+          </h4>
+        </div>
+        <!-- templates for old messages without scrolling-->
+        <div ng-include="'client/app/components/chat/html-partials/old_messages.partial.html'"
+             ng-if="chatCtrl.oldMessages.length > 0">
+        </div>
+        <!-- templates for latest messages with scrolling on message added -->
+        <div ng-include="'client/app/components/chat/html-partials/latest_messages.partial.html'">
+        </div>
+        <!-- for Bot typing imitation -->
+        <div id="BOT-is-typing">
+          <div ng-show="chatCtrl.botIsBusy" class="message">
+            <img src="client\app\components\chat\img\3_bf.jpg" alt="">
+            <div class="message-body">
+              <h3>BOT</h3>
+              <p>
+                is typing
+                <span class="dot dot1">.</span>
+                <span class="dot dot2">.</span>
+                <span class="dot dot3">.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="input-block">
+      <img ng-src="http://localhost:4000\{{chatCtrl.User.avatar}}" alt="">
+      <form name="newMessageForm" ng-submit="chatCtrl.onSubmit()">
+        <textarea name="textarea"
+          ng-model="chatCtrl.newMessage"
+          ng-keyup="chatCtrl.onTextAdded($event)">
+        </textarea>
+        <button type="submit" name="submitMessage">send</button>
+      </form>
+      <div class="img-wrapper">
+        <img src="client\app\components\chat\img\3_bf.jpg" alt="">
+        <div id="notifications"
+          ng-show="chatCtrl.notificationCount > 0"
+          ng-click="chatCtrl.scrollToNewMessages()">
+          <span>
+            {{chatCtrl.notificationCount}}
+          </span>
+        </div>
+      </div>
+    </div>
+</div>

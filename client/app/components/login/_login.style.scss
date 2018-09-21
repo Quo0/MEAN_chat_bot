@@ -1,0 +1,59 @@
+.login-wrapper{
+  font-family: monospace;
+  font-size: 1.2em;
+  background-color: #fff;
+  max-width: 545px;
+  box-shadow: 0 0 0 2px var(--clr-green), 0 0 0 15px var(--clr-yellow);
+  padding: 1em;
+  h2{
+    font-size: 2.9em;
+    color: var(--clr-yellow);
+    text-shadow: 2px 2px 0px var(--clr-dark-green);
+  }
+  input{
+    padding: .4em .7em;
+    color: var(--clr-blue);
+    border: none;
+    border-bottom: 2px solid var(--clr-green);
+    &.ng-dirty{
+      border-bottom-color: var(--clr-blue);
+    }
+    &.ng-invalid{
+      border-bottom-color: var(--clr-red) !important;
+    }
+    &:focus{
+      outline: none;
+      border-bottom-color:  var(--clr-blue);
+      &::placeholder{
+        color: var(--clr-blue);
+      }
+    }
+  }
+  button{
+    color: var(--clr-green);
+    display: inline-block;
+    padding: .4em .5em;
+    background-color: #fff;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid var(--clr-green);
+    cursor: pointer;
+    &:hover, &:focus{
+      color: var(--clr-blue);
+      border-bottom: 2px solid  var(--clr-blue);
+      padding: .4em .1em .4em .9em;
+    }
+    &:active{
+      outline: none;
+      color:  var(--clr-dark-green);
+    }
+  }
+  .errors{
+    padding: .2em .7em 0;
+    p{
+      font-size: .8em;
+      color: var(--clr-red);
+      font-weight: bold;
+    }
+  }
+}

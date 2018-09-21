@@ -1,0 +1,163 @@
+<ul id="latest-messages">
+  <li ng-repeat="message in chatCtrl.latestMessages" class="repeated-list">
+    <!-- user message template -->
+    <div ng-if="message.whoSent !== 'BOT'" class="align-right">
+      <div class="message user-message">
+        <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+        <div class="message-body">
+          <h3>{{message.whoSent}}</h3>
+          <p>{{message.text}}</p>
+          <div class="message-details">
+            <p>{{message.date | formatDate}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- BOT welcome-message template -->
+    <div ng-if="message.text.type === 'welcome' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            {{paragraf}}
+          </li>
+        </ul>
+        <p>My name is Bot and I like to read and share news via different news API's.</p>
+        <br>
+        <p>If you tell me <span class="bot-command">"BOT show me: 'anything' "</span>, i will try to find any topic , that match your query.</p>
+        <p>And show it to you =)</p>
+        <br>
+        <p>Hmm... For example!</p>
+        <p>Look that I red resently at {{message.text.article.source.name}} !!!</p>
+        <br>
+        <h4>{{message.text.article.title}}</h4>
+        <a href="{{message.text.article.url}}">
+          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+        </a>
+        <p>{{message.text.article.description || ""}}</p>
+        <br>
+        <a href="{{message.text.article.url}}">
+          Click to read full article...
+        </a>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT queryAnswer-message template -->
+    <div ng-if="message.text.type === 'queryAnswer' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            {{paragraf}}
+          </li>
+        </ul>
+        <br>
+        <p>This one is from {{message.text.article.source.name}}</p>
+        <br>
+        <h4>{{message.text.article.title}}</h4>
+        <a href="{{message.text.article.url}}">
+          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+        </a>
+        <p>{{message.text.article.description || ""}}</p>
+        <a href="{{message.text.article.url}}">
+          Click to read full article...
+        </a>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT queryAnswerFAILED message template -->
+    <div ng-if="message.text.type === 'queryAnswerFailed' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            {{paragraf}}
+          </li>
+        </ul>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT dontUnderstand message template -->
+    <div ng-if="message.text.type === 'dontUnderstand' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            {{paragraf}}
+          </li>
+        </ul>
+        <p>For commands prompt type: <span class="bot-command">'BOT help'</span></p>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT help message template -->
+    <div ng-if="message.text.type === 'help' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <p>Ok! This is all my commands:</p>
+        <br>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            <p class="bot-command">{{paragraf}}</p>
+          </li>
+        </ul>
+        <br>
+        <p>Also you can add 'me' in the end to feel more comfartable =)</p>
+        <p>
+          Like: <span class="bot-command">"BOT show me: ' your query ' </span>
+          or <span class="bot-command">"BOT help me"</span>
+        </p>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT greetAgain message template -->
+    <div ng-if="message.text.type === 'greetAgain' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            <p>{{paragraf}}</p>
+          </li>
+        </ul>
+        <br>
+        <p>If you allready forgot commands Type
+          <span class="bot-command">"BOT help"</span>
+        </p>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT inactivity message template -->
+    <div ng-if="message.text.type === 'inactivity' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            <p>{{paragraf}}</p>
+          </li>
+        </ul>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+  </li>
+</ul>

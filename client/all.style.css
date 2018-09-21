@@ -1,0 +1,788 @@
+/*! normalize.css v8.0.0 | MIT License | github.com/necolas/normalize.css */
+/* Document
+   ========================================================================== */
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ */
+html {
+  line-height: 1.15;
+  /* 1 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */ }
+
+/* Sections
+   ========================================================================== */
+/**
+ * Remove the margin in all browsers.
+ */
+body {
+  margin: 0; }
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
+ */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0; }
+
+/* Grouping content
+   ========================================================================== */
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+hr {
+  box-sizing: content-box;
+  /* 1 */
+  height: 0;
+  /* 1 */
+  overflow: visible;
+  /* 2 */ }
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+pre {
+  font-family: monospace, monospace;
+  /* 1 */
+  font-size: 1em;
+  /* 2 */ }
+
+/* Text-level semantics
+   ========================================================================== */
+/**
+ * Remove the gray background on active links in IE 10.
+ */
+a {
+  background-color: transparent; }
+
+/**
+ * 1. Remove the bottom border in Chrome 57-
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
+ */
+abbr[title] {
+  border-bottom: none;
+  /* 1 */
+  text-decoration: underline;
+  /* 2 */
+  text-decoration: underline dotted;
+  /* 2 */ }
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+b,
+strong {
+  font-weight: bolder; }
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+code,
+kbd,
+samp {
+  font-family: monospace, monospace;
+  /* 1 */
+  font-size: 1em;
+  /* 2 */ }
+
+/**
+ * Add the correct font size in all browsers.
+ */
+small {
+  font-size: 80%; }
+
+/**
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
+ */
+sub,
+sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline; }
+
+sub {
+  bottom: -0.25em; }
+
+sup {
+  top: -0.5em; }
+
+/* Embedded content
+   ========================================================================== */
+/**
+ * Remove the border on images inside links in IE 10.
+ */
+img {
+  border-style: none; }
+
+/* Forms
+   ========================================================================== */
+/**
+ * 1. Change the font styles in all browsers.
+ * 2. Remove the margin in Firefox and Safari.
+ */
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  /* 1 */
+  font-size: 100%;
+  /* 1 */
+  line-height: 1.15;
+  /* 1 */
+  margin: 0;
+  /* 2 */ }
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ */
+button,
+input {
+  /* 1 */
+  overflow: visible; }
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+button,
+select {
+  /* 1 */
+  text-transform: none; }
+
+/**
+ * Correct the inability to style clickable types in iOS and Safari.
+ */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button; }
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+button::-moz-focus-inner,
+[type="button"]::-moz-focus-inner,
+[type="reset"]::-moz-focus-inner,
+[type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0; }
+
+/**
+ * Restore the focus styles unset by the previous rule.
+ */
+button:-moz-focusring,
+[type="button"]:-moz-focusring,
+[type="reset"]:-moz-focusring,
+[type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText; }
+
+/**
+ * Correct the padding in Firefox.
+ */
+fieldset {
+  padding: 0.35em 0.75em 0.625em; }
+
+/**
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
+ */
+legend {
+  box-sizing: border-box;
+  /* 1 */
+  color: inherit;
+  /* 2 */
+  display: table;
+  /* 1 */
+  max-width: 100%;
+  /* 1 */
+  padding: 0;
+  /* 3 */
+  white-space: normal;
+  /* 1 */ }
+
+/**
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
+ */
+progress {
+  vertical-align: baseline; }
+
+/**
+ * Remove the default vertical scrollbar in IE 10+.
+ */
+textarea {
+  overflow: auto; }
+
+/**
+ * 1. Add the correct box sizing in IE 10.
+ * 2. Remove the padding in IE 10.
+ */
+[type="checkbox"],
+[type="radio"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */ }
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Chrome.
+ */
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto; }
+
+/**
+ * 1. Correct the odd appearance in Chrome and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+[type="search"] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  outline-offset: -2px;
+  /* 2 */ }
+
+/**
+ * Remove the inner padding in Chrome and Safari on macOS.
+ */
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none; }
+
+/**
+ * 1. Correct the inability to style clickable types in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  /* 1 */
+  font: inherit;
+  /* 2 */ }
+
+/* Interactive
+   ========================================================================== */
+/*
+ * Add the correct display in Edge, IE 10+, and Firefox.
+ */
+details {
+  display: block; }
+
+/*
+ * Add the correct display in all browsers.
+ */
+summary {
+  display: list-item; }
+
+/* Misc
+   ========================================================================== */
+/**
+ * Add the correct display in IE 10+.
+ */
+template {
+  display: none; }
+
+/**
+ * Add the correct display in IE 10.
+ */
+[hidden] {
+  display: none; }
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0; }
+
+ul {
+  list-style: none; }
+
+p {
+  padding: 0;
+  margin: 0; }
+
+h1 {
+  padding: 0;
+  margin: 0; }
+
+a {
+  text-decoration: none; }
+
+body {
+  background-color: #44AFB5;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center;
+  min-height: 100vh; }
+
+main {
+  width: 90vw;
+  max-width: 1200px;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center; }
+
+:root {
+  --clr-green: #44AFB5;
+  --clr-yellow: #FDDC7F;
+  --clr-blue: #3778f3;
+  --clr-red: #B52350;
+  --clr-dark-green: rgba(42, 88, 91, 0.8); }
+
+.welcome-wrapper {
+  font-family: monospace;
+  display: -ms-flexbox;
+  display: flex;
+  min-height: 500px;
+  border: 2px solid var(--clr-yellow); }
+
+.welcome-left-side {
+  --corner-padding: 20px;
+  position: relative;
+  width: 60%;
+  padding: 1em 1em 2em; }
+  .welcome-left-side img {
+    position: absolute;
+    right: var(--corner-padding);
+    bottom: calc( var(--corner-padding) / 4);
+    z-index: 0;
+    max-width: 100%;
+    opacity: .5; }
+  .welcome-left-side .content {
+    position: relative;
+    z-index: 1;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    height: 100%; }
+  .welcome-left-side p {
+    color: #FFF;
+    font-size: 5em; }
+  .welcome-left-side h1 {
+    font-size: 7em;
+    color: var(--clr-yellow);
+    text-transform: capitalize;
+    word-spacing: -25px; }
+  .welcome-left-side ul {
+    -ms-flex-positive: 1;
+        flex-grow: 1;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    -ms-flex-pack: end;
+        justify-content: flex-end;
+    color: #FFF;
+    font-size: 2.2em;
+    list-style-image: url(app/components/welcome/img/gear-16.ico);
+    padding-left: 1em; }
+    .welcome-left-side ul li {
+      padding: .2em; }
+
+.welcome-right-side {
+  width: 41%;
+  background-color: var(--clr-yellow);
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+  -ms-flex-align: center;
+      align-items: center;
+  font-size: 2em;
+  padding: 1em;
+  text-align: center; }
+  .welcome-right-side p {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--clr-red);
+    text-shadow: 2px 2px 10px #FFF; }
+  .welcome-right-side .welcome-links {
+    width: 80%; }
+  .welcome-right-side a {
+    color: var(--clr-dark-green);
+    display: block;
+    padding: .2em .5em;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px var(--clr-dark-green);
+    cursor: pointer; }
+    .welcome-right-side a:hover {
+      color: var(--clr-green);
+      box-shadow: 0 0 0 3px var(--clr-green); }
+    .welcome-right-side a:active {
+      color: var(--clr-blue);
+      box-shadow: 0 0 0 2px var(--clr-blue); }
+    .welcome-right-side a:first-of-type {
+      margin-bottom: .5em; }
+
+.registration-wrapper {
+  font-family: monospace;
+  font-size: 1.2em;
+  width: 520px;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px var(--clr-green), 0 0 0 15px var(--clr-yellow);
+  padding: 1em; }
+  .registration-wrapper h2 {
+    font-size: 2.9em;
+    text-align: center;
+    color: var(--clr-yellow);
+    text-shadow: 2px 2px 0px var(--clr-dark-green); }
+  .registration-wrapper form {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    padding: 1.2em .5em .5em; }
+    .registration-wrapper form input {
+      padding: .4em .7em;
+      color: var(--clr-blue);
+      border: none;
+      border-bottom: 2px solid var(--clr-green); }
+      .registration-wrapper form input.ng-dirty {
+        border-bottom-color: var(--clr-blue); }
+      .registration-wrapper form input.ng-invalid {
+        border-bottom-color: var(--clr-red) !important; }
+      .registration-wrapper form input:focus {
+        outline: none;
+        border-bottom-color: var(--clr-blue); }
+        .registration-wrapper form input:focus:-ms-input-placeholder {
+          color: var(--clr-blue); }
+        .registration-wrapper form input:focus::placeholder {
+          color: var(--clr-blue); }
+    .registration-wrapper form :-ms-input-placeholder {
+      color: var(--clr-dark-green);
+      letter-spacing: 2px; }
+    .registration-wrapper form ::placeholder {
+      color: var(--clr-dark-green);
+      letter-spacing: 2px; }
+    .registration-wrapper form button {
+      color: var(--clr-green);
+      display: block;
+      padding: .4em .7em;
+      background-color: #fff;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 0 0 2px var(--clr-green);
+      outline: none;
+      cursor: pointer; }
+      .registration-wrapper form button:hover {
+        color: var(--clr-green);
+        box-shadow: 0 0 0 3px var(--clr-blue); }
+      .registration-wrapper form button:active {
+        outline: none;
+        color: var(--clr-blue);
+        box-shadow: 0 0 0 2px var(--clr-blue); }
+    .registration-wrapper form .errors {
+      padding: .2em .7em;
+      margin-bottom: 10px; }
+      .registration-wrapper form .errors p {
+        font-size: .8em;
+        color: var(--clr-red);
+        font-weight: bold; }
+
+.login-wrapper {
+  font-family: monospace;
+  font-size: 1.2em;
+  background-color: #fff;
+  max-width: 545px;
+  box-shadow: 0 0 0 2px var(--clr-green), 0 0 0 15px var(--clr-yellow);
+  padding: 1em; }
+  .login-wrapper h2 {
+    font-size: 2.9em;
+    color: var(--clr-yellow);
+    text-shadow: 2px 2px 0px var(--clr-dark-green); }
+  .login-wrapper input {
+    padding: .4em .7em;
+    color: var(--clr-blue);
+    border: none;
+    border-bottom: 2px solid var(--clr-green); }
+    .login-wrapper input.ng-dirty {
+      border-bottom-color: var(--clr-blue); }
+    .login-wrapper input.ng-invalid {
+      border-bottom-color: var(--clr-red) !important; }
+    .login-wrapper input:focus {
+      outline: none;
+      border-bottom-color: var(--clr-blue); }
+      .login-wrapper input:focus:-ms-input-placeholder {
+        color: var(--clr-blue); }
+      .login-wrapper input:focus::placeholder {
+        color: var(--clr-blue); }
+  .login-wrapper button {
+    color: var(--clr-green);
+    display: inline-block;
+    padding: .4em .5em;
+    background-color: #fff;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid var(--clr-green);
+    cursor: pointer; }
+    .login-wrapper button:hover, .login-wrapper button:focus {
+      color: var(--clr-blue);
+      border-bottom: 2px solid var(--clr-blue);
+      padding: .4em .1em .4em .9em; }
+    .login-wrapper button:active {
+      outline: none;
+      color: var(--clr-dark-green); }
+  .login-wrapper .errors {
+    padding: .2em .7em 0; }
+    .login-wrapper .errors p {
+      font-size: .8em;
+      color: var(--clr-red);
+      font-weight: bold; }
+
+.chat-wrapper {
+  font-family: monospace;
+  font-size: 1.2em;
+  --block-padding: 1em;
+  min-width: 400px;
+  max-width: 900px;
+  width: 90vw;
+  height: 90vh;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  border: 8px solid var(--clr-yellow); }
+  .chat-wrapper .chat-header {
+    display: -ms-flexbox;
+    display: flex;
+    min-height: 45px;
+    -ms-flex-pack: justify;
+        justify-content: space-between;
+    padding: calc(var(--block-padding) - 8px) 0 var(--block-padding);
+    background-color: var(--clr-yellow); }
+    .chat-wrapper .chat-header h2 {
+      color: var(--clr-red);
+      text-shadow: 2px 2px 10px #FFF;
+      -ms-flex-positive: 1;
+          flex-grow: 1; }
+    .chat-wrapper .chat-header #search-field {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-align: center;
+          align-items: center; }
+      .chat-wrapper .chat-header #search-field input[type="checkbox"] {
+        display: none; }
+      .chat-wrapper .chat-header #search-field input[type="text"] {
+        padding: .1em; }
+      .chat-wrapper .chat-header #search-field label {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        margin: 0 1em;
+        border-radius: 50%;
+        background-color: #fff;
+        background-size: contain;
+        box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--clr-green);
+        cursor: pointer; }
+        .chat-wrapper .chat-header #search-field label.notSearching {
+          background-image: url(http://www.defaulticon.com/images/icons32x32/search_0.png?itok=eqsHkE5C); }
+        .chat-wrapper .chat-header #search-field label.searching {
+          background-image: url(http://www.defaulticon.com/images/icons32x32/cancel.png?itok=vIT63GD3); }
+    .chat-wrapper .chat-header button {
+      outline: none; }
+  .chat-wrapper button {
+    color: var(--clr-green);
+    display: block;
+    padding: 0.2em .9em;
+    background-color: #fff;
+    border: none;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px #999;
+    cursor: pointer; }
+    .chat-wrapper button:hover {
+      color: var(--clr-green);
+      box-shadow: 0 0 0 2px var(--clr-green); }
+    .chat-wrapper button:active {
+      outline: none;
+      color: var(--clr-blue);
+      box-shadow: 0 0 0 2px var(--clr-blue); }
+  .chat-wrapper .chat-window {
+    background-color: #fff;
+    position: relative;
+    overflow-y: hidden;
+    height: 100%; }
+    .chat-wrapper .chat-window ::-webkit-scrollbar {
+      width: 6px; }
+    .chat-wrapper .chat-window ::-webkit-scrollbar-track {
+      background: linear-gradient(to right, #CCC, #FFF); }
+    .chat-wrapper .chat-window ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background: var(--clr-red);
+      box-shadow: inset 0 0 1px #fff; }
+    .chat-wrapper .chat-window #messages-window {
+      padding: var(--block-padding);
+      height: 100%;
+      overflow-y: auto; }
+      .chat-wrapper .chat-window #messages-window #downloading {
+        width: 200px;
+        position: absolute;
+        top: 10px;
+        left: calc(50% - 100px);
+        text-align: center; }
+      .chat-wrapper .chat-window #messages-window .dot {
+        animation-duration: 1s;
+        animation-iteration-count: infinite; }
+        .chat-wrapper .chat-window #messages-window .dot.dot1 {
+          animation-name: dotAnim1; }
+        .chat-wrapper .chat-window #messages-window .dot.dot2 {
+          animation-name: dotAnim2; }
+        .chat-wrapper .chat-window #messages-window .dot.dot3 {
+          animation-name: dotAnim3; }
+      .chat-wrapper .chat-window #messages-window .repeated-list {
+        padding: 2em .5em; }
+        .chat-wrapper .chat-window #messages-window .repeated-list .align-right {
+          text-align: right; }
+      .chat-wrapper .chat-window #messages-window .message {
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+        padding: .5em;
+        max-width: 80%;
+        background: linear-gradient(to right, #FFF 15%, #71bcf142 100%);
+        border-radius: 5px; }
+        .chat-wrapper .chat-window #messages-window .message.user-message {
+          -ms-flex-direction: row-reverse;
+              flex-direction: row-reverse;
+          background: radial-gradient(circle at 82% 5%, #FFF -11px, #54afb6a1); }
+          .chat-wrapper .chat-window #messages-window .message.user-message .message-body {
+            text-align: right; }
+        .chat-wrapper .chat-window #messages-window .message img {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          box-shadow: 0 0 0 2px #FFF; }
+        .chat-wrapper .chat-window #messages-window .message .message-body {
+          -ms-flex-positive: 1;
+              flex-grow: 1;
+          padding: 0 .5em; }
+          .chat-wrapper .chat-window #messages-window .message .message-body p {
+            margin: .3em 0;
+            word-break: break-word; }
+          .chat-wrapper .chat-window #messages-window .message .message-body img {
+            width: 100%;
+            height: auto;
+            border-radius: 0; }
+          .chat-wrapper .chat-window #messages-window .message .message-body .message-details {
+            font-size: .8em;
+            color: var(--clr-red); }
+  .chat-wrapper .input-block {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: start;
+        align-items: flex-start;
+    min-height: 135px;
+    background-color: #fff;
+    border-top: 4px solid var(--clr-yellow);
+    padding: 1em 1.2em .3em;
+    text-align: right; }
+    .chat-wrapper .input-block img {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #FFF;
+      box-shadow: 0 0 0 2px var(--clr-green);
+      border-radius: 50%; }
+    .chat-wrapper .input-block .img-wrapper {
+      position: relative; }
+      .chat-wrapper .input-block .img-wrapper #notifications {
+        position: absolute;
+        top: -5%;
+        left: -5%;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #FFF;
+        border: 2px solid var(--clr-green);
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+            align-items: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+        color: var(--clr-red);
+        cursor: pointer; }
+      .chat-wrapper .input-block .img-wrapper img {
+        width: 80px;
+        height: 80px;
+        border: 2px solid #FFF;
+        box-shadow: 0 0 0 2px var(--clr-green);
+        border-radius: 50%; }
+    .chat-wrapper .input-block form {
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+          flex-direction: column;
+      -ms-flex-align: end;
+          align-items: flex-end;
+      padding: 0 1em; }
+      .chat-wrapper .input-block form ::-webkit-scrollbar {
+        width: 4px; }
+      .chat-wrapper .input-block form ::-webkit-scrollbar-thumb {
+        border-radius: 2px;
+        background: linear-gradient(to right, var(--clr-green) 90%, #FFF 10%); }
+      .chat-wrapper .input-block form textarea {
+        width: 100%;
+        resize: none;
+        min-height: 80px;
+        margin-bottom: 5px; }
+        .chat-wrapper .input-block form textarea:focus {
+          outline: none;
+          border-color: var(--clr-green); }
+      .chat-wrapper .input-block form button {
+        -ms-flex-preferred-size: 100%;
+            flex-basis: 100%; }
+        .chat-wrapper .input-block form button:focus {
+          outline: none;
+          box-shadow: 0 0 0 2px var(--clr-green); }
+
+.repeated-list, #BOT-is-typing {
+  transition: all 400ms cubic-bezier(0.15, 0.21, 0, 0.99); }
+  .repeated-list.ng-enter, #BOT-is-typing.ng-enter {
+    opacity: 0.2; }
+  .repeated-list.ng-enter-active, #BOT-is-typing.ng-enter-active {
+    opacity: 1 !important; }
+
+.bot-command {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--clr-red); }
+
+@keyframes dotAnim1 {
+  0% {
+    opacity: 1; }
+  50% {
+    opacity: 0.2; }
+  100% {
+    opacity: 0.2; } }
+
+@keyframes dotAnim2 {
+  0% {
+    opacity: 0.2; }
+  50% {
+    opacity: 1; }
+  100% {
+    opacity: 0.2; } }
+
+@keyframes dotAnim3 {
+  0% {
+    opacity: 0.2; }
+  50% {
+    opacity: 0.2; }
+  100% {
+    opacity: 1; } }

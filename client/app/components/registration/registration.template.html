@@ -1,0 +1,79 @@
+<div class="registration-wrapper" ng-cloak>
+  <div class="not-succeed" ng-show="!regCtrl.registrationSucceed">
+    <h2>Create your account</h2>
+    <form name="registrationForm" novalidate ng-submit="regCtrl.onSubmit()">
+      <input type="text" name="name" placeholder="User name"
+        ng-model="regCtrl.newUser.name"
+        ng-model-options="{ debounce: 500 }"
+        ng-pattern="regCtrl.checkRules.name.regExp"
+        ng-change="regCtrl.onInputChange('name')">
+      <div class="errors">
+        <p ng-show="regCtrl.showValidationTips('name')">
+          {{regCtrl.checkRules.name.failMessage}}
+        </p>
+        <p ng-show="regCtrl.showValidationTips('userAllreadyExist')">
+          {{regCtrl.checkRules.userAllreadyExist.failMessage}}
+        </p>
+      </div>
+      <input type="email" name="email" placeholder="Your E-mail adress"
+        ng-model="regCtrl.newUser.email"
+        ng-model-options="{ debounce: 500 }"
+        ng-pattern="regCtrl.checkRules.email.regExp"
+        ng-change="regCtrl.onInputChange('email')">
+      <div class="errors">
+        <p ng-show="regCtrl.showValidationTips('email')">
+          {{regCtrl.checkRules.email.failMessage}}
+        </p>
+      </div>
+      <input type="text" name="confirmEmail" placeholder="Confirm E-mail"
+        ng-model="regCtrl.newUser.confirmEmail"
+        ng-model-options="{ debounce: 500 }"
+        ng-pattern="regCtrl.newUser.email"
+        ng-change="regCtrl.onInputChange('confirmEmail')">
+      <div class="errors">
+        <p ng-show="regCtrl.showValidationTips('confirmEmail')">
+          {{regCtrl.checkRules.confirmEmail.failMessage}}
+        </p>
+      </div>
+      <input type="password" name="password" placeholder="Create password"
+        ng-model="regCtrl.newUser.password"
+        ng-model-options="{ debounce: 500 }"
+        ng-pattern="regCtrl.checkRules.password.regExp"
+        ng-change="regCtrl.onInputChange('password')">
+      <div class="errors">
+        <p ng-show="regCtrl.showValidationTips('password')">
+          {{regCtrl.checkRules.password.failMessage}}
+        </p>
+      </div>
+      <input type="password" name="confirmPassword" placeholder="Confirm password"
+        ng-model="regCtrl.newUser.confirmPassword"
+        ng-model-options="{ debounce: 500 }"
+        ng-pattern="regCtrl.newUser.password"
+        ng-change="regCtrl.onInputChange('confirmPassword')">
+      <div class="errors">
+        <p ng-show="regCtrl.showValidationTips('confirmPassword')">
+          {{regCtrl.checkRules.confirmPassword.failMessage}}
+        </p>
+      </div>
+      <input type="file" name="avatar" id="avatar" accept="image/*"
+        file-model-directive
+        ng-model="regCtrl.newUser.avatar"
+        ng-model-options="{ debounce: 500 }"
+        ng-change="regCtrl.showValidationTips('avatar')">
+      <div class="errors">
+        <p ng-show="regCtrl.showValidationTips('avatar')">
+          {{regCtrl.checkRules.avatar.failMessage}}
+        </p>
+        <p ng-hide="regCtrl.serverRegErrors.avatar">
+          {{regCtrl.serverRegErrors.avatarType}}
+        </p>
+      </div>
+      <button type="submit" name="newUserSubmit">
+        Create
+      </button>
+  </div>
+  <div class="succeed" ng-show="regCtrl.registrationSucceed">
+    <h2>Congrads!</h2>
+  </div>
+  </form>
+</div>

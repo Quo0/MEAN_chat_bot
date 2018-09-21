@@ -1,0 +1,73 @@
+.registration-wrapper{
+  font-family: monospace;
+  font-size: 1.2em;
+  width: 520px;
+  // background-color: var(--clr-yellow);
+  background-color: #fff;
+  box-shadow: 0 0 0 2px var(--clr-green), 0 0 0 15px var(--clr-yellow);
+  padding: 1em;
+  h2{
+    font-size: 2.9em;
+    text-align: center;
+    color: var(--clr-yellow);
+    text-shadow: 2px 2px 0px var(--clr-dark-green);
+  }
+  form{
+    display: flex;
+    flex-direction: column;
+    padding: 1.2em .5em .5em;
+    input{
+      padding: .4em .7em;
+      color: var(--clr-blue);
+      border: none;
+      border-bottom: 2px solid var(--clr-green);
+      &.ng-dirty{
+        border-bottom-color: var(--clr-blue);
+      }
+      &.ng-invalid{
+        border-bottom-color: var(--clr-red) !important;
+      }
+
+      &:focus{
+        outline: none;
+        border-bottom-color:  var(--clr-blue);
+        &::placeholder{
+          color: var(--clr-blue);
+        }
+      }
+    }
+    ::placeholder{
+      color: var(--clr-dark-green);
+      letter-spacing: 2px;
+    }
+    button{
+      color: var(--clr-green);
+      display: block;
+      padding: .4em .7em;
+      background-color: #fff;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 0 0 2px var(--clr-green);
+      outline: none;
+      cursor: pointer;
+      &:hover{
+        color: var(--clr-green);
+        box-shadow: 0 0 0 3px var(--clr-blue);
+      }
+      &:active{
+        outline: none;
+        color: var(--clr-blue);
+        box-shadow: 0 0 0 2px var(--clr-blue);
+      }
+    }
+    .errors{
+      padding: .2em .7em;
+      margin-bottom: 10px;
+      p{
+        font-size: .8em;
+        color: var(--clr-red);
+        font-weight: bold;
+      }
+    }
+  }
+}
