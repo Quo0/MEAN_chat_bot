@@ -62,7 +62,8 @@
       <form name="newMessageForm" ng-submit="chatCtrl.onSubmit()">
         <textarea name="textarea"
           ng-model="chatCtrl.newMessage"
-          ng-keyup="chatCtrl.onTextAdded($event)">
+          ng-keyup="chatCtrl.onTextAdded($event)"
+          ng-trim="false">
         </textarea>
         <button type="submit" name="submitMessage">send</button>
       </form>

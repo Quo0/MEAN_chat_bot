@@ -210,6 +210,10 @@
             background: radial-gradient(circle at 82% 5%, #FFF -11px, #54afb6a1);
             .message-body{
               text-align: right;
+              p{
+                white-space: pre-wrap;
+                text-align: left;
+              }
             }
           }
           img{
