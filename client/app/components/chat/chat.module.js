@@ -56,7 +56,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   this.getBotsRandomFrase = getBotsRandomFrase;
   this.showBotsQueryAnswer = showBotsQueryAnswer;
   this.getLatestMessages();
-  this.activateBot();
+  // this.activateBot();
 
   // func bodies
 
@@ -79,6 +79,9 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         });
         this.latestMessages = latestMessages;
         forceScrollToTheBottom();
+      })
+      .then(()=>{
+        this.activateBot();
       })
       .catch(err=>{
         console.error(err);
@@ -150,7 +153,6 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   }
 
   function activateBot(){
-    //  if msg hist
     if( Date.parse(new Date()) - Date.parse(this.User.loginTime ) < 5000 ){
       $timeout(()=>{
         //typing... emulation
@@ -163,16 +165,23 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         }, 3500); // time he will type the msg
       }, 2500) // time before he start typing
     } else {
-      $timeout(()=>{
-        //typing... emulation
-        this.botIsBusy = true;
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+      // time bot consider enought to send you something again if you refreshed or close the page
+      const lastMsgDate = new Date(this.latestMessages[this.latestMessages.length - 1].date);
+      if( Date.parse(new Date()) - Date.parse(lastMsgDate) > 1 * 60 * 1000 ){
+        console.log("BOT will greet you again");
         $timeout(()=>{
-          this.botIsBusy = false;
-          greetAgain.call(this);
-          startInactivityTimer.call(this);
-        }, 2500);// time he will type the msg
-      }, 1500)// time before he start typing
+          //typing... emulation
+          this.botIsBusy = true;
+          tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+          $timeout(()=>{
+            this.botIsBusy = false;
+            greetAgain.call(this);
+            startInactivityTimer.call(this);
+          }, 2500);// time he will type the msg
+        }, 1500)// time before he start typing
+      } else {
+        console.log("BOT will not greet you again");
+      }
     }
     tryToScrollToTheBottom.call(this, getScrollBottomPosition());
   }
