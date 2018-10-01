@@ -39,18 +39,21 @@
             // transition-timing-function: cubic-bezier(0.26, 0.04, 0.94, 0.42);
             .line::before{
               animation-name: topBurgerLineBack;
-              animation-duration: 1.5s;
+              animation-duration: .4s;
               animation-fill-mode: both;
+              animation-delay: .4s;
             }
             .line{
               animation-name: centerBurgerLineBack;
-              animation-duration: 1.5s;
+              animation-duration: .4s;
               animation-fill-mode: both;
+              animation-delay: .2s;
             }
             .line::after{
               animation-name: bottomBurgerLineBack;
-              animation-duration: 1.5s;
+              animation-duration: .4s;
               animation-fill-mode: both;
+              animation-delay: 0s;
             }
           }
           &.burger-hovered{
@@ -58,19 +61,19 @@
               animation-name: topBurgerLine;
               animation-duration: 1.5s;
               animation-fill-mode: both;
-              // animation-iteration-count: infinite;
+              animation-delay: 0s;
             }
             .line{
               animation-name: centerBurgerLine;
               animation-duration: 1.5s;
               animation-fill-mode: both;
-              // animation-iteration-count: infinite;
+              animation-delay: 0s;
             }
             .line::after{
               animation-name: bottomBurgerLine;
               animation-duration: 1.5s;
               animation-fill-mode: both;
-              // animation-iteration-count: infinite;
+              animation-delay: 0s;
             }
           }
           .line{
@@ -173,6 +176,7 @@
         padding: var(--block-padding);
         height: 100%;
         overflow-y: auto;
+        position: relative;
         #downloading{
           width: 200px;
           position: absolute;
@@ -447,30 +451,27 @@
 // menu showed back
 @keyframes topBurgerLineBack {
   0% {
-    left: 100%;
+    background-color: transparent;
   }
   100% {
-    left: 0%
+    background-color: #111;
   }
 }
 @keyframes centerBurgerLineBack {
   0% {
-    left: 100%;
-    background-color: transparent;
-  }
-  30% {
     background-color: transparent;
   }
   100% {
-    left: 0;
     background-color: #111;
   }
 }
 @keyframes bottomBurgerLineBack {
-  0%{
-    left: -100%;
+  0% {
+    background-color: transparent;
   }
-  100%{}
+  100% {
+    background-color: #111;
+  }
 }
 @keyframes dotAnim1 {
   0% {

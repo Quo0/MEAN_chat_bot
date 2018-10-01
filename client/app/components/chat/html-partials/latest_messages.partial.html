@@ -1,4 +1,14 @@
+
 <ul id="latest-messages">
+  <li>
+    <div id="downloading" ng-show="chatCtrl.loadingInProgress">
+      <h4>downloading
+        <span class="dot dot1">.</span>
+        <span class="dot dot2">.</span>
+        <span class="dot dot3">.</span>
+      </h4>
+    </div>
+  </li>
   <li ng-repeat="message in chatCtrl.DISPLAYED_MESSAGES" class="repeated-list">
     <!-- user message template -->
     <div ng-if="message.whoSent !== 'BOT'" class="align-right">

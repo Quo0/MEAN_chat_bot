@@ -34,7 +34,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   let hoveredOverMenuTimer;
   this.User = currentUser;
   this.DISPLAYED_MESSAGES = [];
-  this.showOnLoadLimit = 30;
+  this.showOnLoadLimit = 50;
   this.notificationCount = 0;
   //methods
   this.activateBot = activateBot;
@@ -102,13 +102,19 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         if(serverResponse.data.fetched){
           this.nothingToLoad = true;
           const restMessages = serverResponse.data.lastRecords;
+          if(messagesWindow.scrollTop <= 1){
+            messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
+          }
           restMessages.reverse().forEach(message=>{
             message.text = JSON.parse(message.text);
             this.DISPLAYED_MESSAGES.unshift(message)
           })
-            this.loadingInProgress = false;
+          this.loadingInProgress = false;
         } else {
           const restMessages = serverResponse.data;
+          if(messagesWindow.scrollTop <= 1){
+            messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
+          }
           restMessages.reverse().forEach(message=>{
             message.text = JSON.parse(message.text);
             this.DISPLAYED_MESSAGES.unshift(message)
@@ -576,6 +582,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   }
 
   messagesWindow.onscroll = ()=>{
+    // rules for BOTTOM
     if(getScrollBottomPosition() <= 1){
       this.atBottom = true;
       $timeout(()=>{
@@ -584,29 +591,19 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     } else {
       this.atBottom = false;
     }
+    // rules for TOP
+    const lessThanPersentage = messagesWindow.scrollTop / messagesWindow.scrollHeight * 100 < 40 ;
     const latestUl = document.querySelector("#latest-messages");
     const messagesShowed = latestUl.querySelectorAll(".repeated-list").length;
-    if( messagesWindow.scrollTop <= 1 &&
-        messagesShowed >= this.showOnLoadLimit &&
-        !this.nothingToLoad &&
-        !this.loadingInProgress ){
+    if( lessThanPersentage && messagesShowed >= this.showOnLoadLimit &&
+        !this.nothingToLoad && !this.loadingInProgress ){
+      console.log(messagesWindow.scrollTop / messagesWindow.scrollHeight * 100);
       const lastList = latestUl.querySelector("li");
+      this.loadingInProgress = true;
+      console.log("lzlzlzl" , this.loadingInProgress);
       $timeout(()=>{
-        this.loadingInProgress = true;
-        return $timeout(()=>{},0);
-      }, 0)
-      .then(()=>{
-        return $timeout(()=>{
-          this.getSomePreviousMessages();
-          lastList.scrollIntoView()
-          messagesWindow.scrollTop = messagesWindow.scrollTop - 14 // for smoothing(1em - 2px);
-        } , 2500)
-      })
-      .then(()=>{
-        return $timeout(()=>{
-          messagesWindow.scrollTop = messagesWindow.scrollTop - 80
-        } , 150)
-      })
+        this.getSomePreviousMessages();
+      } , 2500)
     }
   }
 }

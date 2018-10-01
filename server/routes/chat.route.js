@@ -33,7 +33,7 @@ function chatPOST(req,resp,next){
 }
 
 function chatGET(req,resp,next){
-  console.log(req.query);
+  console.log("Params were send:" , req.query);
   if(!req.query.offset){
     const limit = JSON.parse(req.query.limit);
     const currentUserChatHistModel = mongoose.model(`msg_hist_${req.params.id}`, messageSchema);
@@ -50,12 +50,12 @@ function chatGET(req,resp,next){
     currentUserChatHistModel.find( {} ,(err, data)=>{
       const totalRecords = data.length;
       if(err){console.error(err)}
-      console.log("Total in DB", data.length);
-      const cutTo = data.length - offset;
+      console.log("Total in DB", totalRecords);
+      const cutTo = totalRecords - offset;
       data.length = cutTo;
-      console.log("after cut the offset", data.length);
+      console.log("Total - offset", data.length);
       const willBeSent = data.slice(-limit);
-      console.log("will be sent", willBeSent.length);
+      console.log("Will be sent last", willBeSent.length);
       if(limit + offset > totalRecords){
         // // добавить сообщение в ответ
         console.log("DONT NEED TO SEND AGAIN");
