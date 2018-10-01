@@ -232,16 +232,30 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     `apiKey=${API_KEY}`;
     queryNewsArticles(url)
       .then(newsApiResponse=>{
-        console.log(newsApiResponse);
-        const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length)
-        const randomArt = newsApiResponse.data.articles[randomN]
-        const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcome");
-        const message = {
-          type: "welcome",
-          frases: botsRandomWelcomeFrase,
-          article: randomArt
+        if(this.latestMessages.length <= 1){
+          console.log(newsApiResponse);
+          const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
+          const randomArt = newsApiResponse.data.articles[randomN];
+          const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcome");
+          const message = {
+            type: "welcome",
+            frases: botsRandomWelcomeFrase,
+            article: randomArt
+          }
+          return addToMessageHistory( User, "BOT" , message);
+        } else {
+          console.log(newsApiResponse);
+          console.log("2nd way");
+          const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
+          const randomArt = newsApiResponse.data.articles[randomN];
+          const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcomeAgain");
+          const message = {
+            type: "welcomeAgain",
+            frases: botsRandomWelcomeFrase,
+            article: randomArt
+          }
+          return addToMessageHistory( User, "BOT" , message);
         }
-        return addToMessageHistory( User, "BOT" , message)
       })
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
@@ -260,6 +274,10 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       ["Welcome welcome welcome ! ! ! ! !",":Р"],
       ["SUPERRRRRRRR welcome frase3","\\(*_*)/"],
       ["OLOLOLOLOL welcome!!!","\\(+_+ )_"]
+    ]
+    const welcomeAgainFrases = [
+      ["Hey! I'm happy you loged in again!","Haven't seen you for ages =)"],
+      ["WHOOOOOW! Come on!","Didn't expect you will come back again :p","Wanna get some news?"]
     ]
     const greetAgain = [
       ["Welcome back, my friend!","Want me to show you some more cool news?)"],
@@ -300,6 +318,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     ]
 
     if( type === "welcome" ){ selectedTypeArr = welcomeFrases} else
+    if( type === "welcomeAgain" ){ selectedTypeArr = welcomeAgainFrases} else
     if( type === "greetAgain"){ selectedTypeArr = greetAgain} else
     if( type === "inactivity" ){ selectedTypeArr = inactivityFrases} else
     if( type === "queryAnswer" ){ selectedTypeArr = queryAnswerFrases} else

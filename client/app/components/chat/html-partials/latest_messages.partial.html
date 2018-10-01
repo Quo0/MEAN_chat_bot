@@ -32,7 +32,35 @@
         <p>Look that I red resently at {{message.text.article.source.name}} !!!</p>
         <br>
         <h4>{{message.text.article.title}}</h4>
+        <a href="{{message.text.article.url}}"
+          ng-show="message.text.article.urlToImage">
+          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+        </a>
+        <p>{{message.text.article.description || ""}}</p>
+        <br>
         <a href="{{message.text.article.url}}">
+          Click to read full article...
+        </a>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT welcome-again template -->
+    <div ng-if="message.text.type === 'welcomeAgain' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            {{paragraf}}
+          </li>
+        </ul>
+        <p>Look that I red resently at {{message.text.article.source.name}} !!!</p>
+        <br>
+        <h4>{{message.text.article.title}}</h4>
+        <a href="{{message.text.article.url}}"
+          ng-show="message.text.article.urlToImage">
           <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
         </a>
         <p>{{message.text.article.description || ""}}</p>
