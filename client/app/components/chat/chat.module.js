@@ -305,50 +305,52 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
 
   function onSubmit(){
     if(this.newMessage){
-      const currentMessage = this.newMessage;
-      this.newMessage = "";
-      inactivityTime = 0;
-      addToMessageHistory(this.User, this.User.name, currentMessage)
-        .then(serverResponse=>{
-          serverResponse.data.text = JSON.parse(serverResponse.data.text);
-          this.latestMessages.push(serverResponse.data);
-          $interval.cancel(inactivityTimer);
-          startInactivityTimer.call(this);
-          forceScrollToTheBottom();
-        })
-        .then(()=>{
-          return $timeout(()=>{
-            this.botIsBusy = true;
-            tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
-          }, 1000)
-        })
-        .then(()=>{
-          if( currentMessage.match( botsCommands.query ) ){
-            const queryIndex = currentMessage.indexOf(":") + 2 ;
-            const query = currentMessage.slice(queryIndex);
-            $timeout(()=>{
-              this.botIsBusy = false;
-              this.showBotsQueryAnswer(this.User, query);
-            }, 3000)
-          } else
-          if( currentMessage.match( botsCommands.help ) ){
-            $timeout(()=>{
-              this.botIsBusy = false;
-              showBotHelp.call(this);
-            }, 2500)
-          } else {
-            $timeout(()=>{
-              this.botIsBusy = false;
-              showBotDontUnderstand.call(this);
-            }, 2000)
-          }
-        })
-        .then(()=>{
+      if(this.newMessage.trim() != ""){
+        const currentMessage = this.newMessage;
+        this.newMessage = "";
+        inactivityTime = 0;
+        addToMessageHistory(this.User, this.User.name, currentMessage)
+          .then(serverResponse=>{
+            serverResponse.data.text = JSON.parse(serverResponse.data.text);
+            this.latestMessages.push(serverResponse.data);
+            $interval.cancel(inactivityTimer);
+            startInactivityTimer.call(this);
+            forceScrollToTheBottom();
+          })
+          .then(()=>{
+            return $timeout(()=>{
+              this.botIsBusy = true;
+              tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+            }, 1000)
+          })
+          .then(()=>{
+            if( currentMessage.match( botsCommands.query ) ){
+              const queryIndex = currentMessage.indexOf(":") + 2 ;
+              const query = currentMessage.slice(queryIndex);
+              $timeout(()=>{
+                this.botIsBusy = false;
+                this.showBotsQueryAnswer(this.User, query);
+              }, 3000)
+            } else
+            if( currentMessage.match( botsCommands.help ) ){
+              $timeout(()=>{
+                this.botIsBusy = false;
+                showBotHelp.call(this);
+              }, 2500)
+            } else {
+              $timeout(()=>{
+                this.botIsBusy = false;
+                showBotDontUnderstand.call(this);
+              }, 2000)
+            }
+          })
+          .then(()=>{
 
-        })
-        .catch(err=>{
-          console.log(err);
-        })
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+      }
     }
   }
 
@@ -568,10 +570,14 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
 
   function onTextAdded(e){
     if(e.code === "Enter" && !e.shiftKey){
-      this.onSubmit();
+      if(this.newMessage.trim() != ""){
+        this.onSubmit();
+      } else {
+        this.newMessage = "";
+      }
     }
     if(e.code === "Enter" && e.shiftKey){
-      this.newMessage+="\n"
+      this.newMessage+="";
     }
   }
 

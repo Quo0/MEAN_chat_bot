@@ -725,6 +725,9 @@ main {
           background: radial-gradient(circle at 82% 5%, #FFF -11px, #54afb6a1); }
           .chat-wrapper .chat-window #messages-window .message.user-message .message-body {
             text-align: right; }
+            .chat-wrapper .chat-window #messages-window .message.user-message .message-body p {
+              white-space: pre-wrap;
+              text-align: left; }
         .chat-wrapper .chat-window #messages-window .message img {
           width: 50px;
           height: 50px;
