@@ -1,5 +1,5 @@
 <ul id="latest-messages">
-  <li ng-repeat="message in chatCtrl.latestMessages" class="repeated-list">
+  <li ng-repeat="message in chatCtrl.DISPLAYED_MESSAGES" class="repeated-list">
     <!-- user message template -->
     <div ng-if="message.whoSent !== 'BOT'" class="align-right">
       <div class="message user-message">

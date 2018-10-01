@@ -33,8 +33,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   let hoveredOverMenuTime = 0;
   let hoveredOverMenuTimer;
   this.User = currentUser;
-  this.latestMessages = [];
-  this.oldMessages = [];
+  this.DISPLAYED_MESSAGES = [];
   this.showOnLoadLimit = 30;
   this.notificationCount = 0;
   //methods
@@ -77,7 +76,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         latestMessages.forEach(message=>{
           message.text = JSON.parse(message.text)
         });
-        this.latestMessages = latestMessages;
+        this.DISPLAYED_MESSAGES = latestMessages;
         forceScrollToTheBottom();
       })
       .catch(err=>{
@@ -85,7 +84,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       })
   }
   function getSomePreviousMessages(){
-    const newOffset = this.latestMessages.length + this.oldMessages.length;
+    const newOffset = this.DISPLAYED_MESSAGES.length;
     const req = {
       method: "GET",
       url: `/chat/${this.User.id}`,
@@ -105,14 +104,14 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
           const restMessages = serverResponse.data.lastRecords;
           restMessages.reverse().forEach(message=>{
             message.text = JSON.parse(message.text);
-            this.oldMessages.unshift(message)
+            this.DISPLAYED_MESSAGES.unshift(message)
           })
             this.loadingInProgress = false;
         } else {
           const restMessages = serverResponse.data;
           restMessages.reverse().forEach(message=>{
             message.text = JSON.parse(message.text);
-            this.oldMessages.unshift(message)
+            this.DISPLAYED_MESSAGES.unshift(message)
           })
           this.loadingInProgress = false;
         }
@@ -139,8 +138,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         filteredData.forEach(message=>{
           message.text = JSON.parse(message.text)
         });
-        this.latestMessages = filteredData;
-        this.oldMessages = [];
+        this.DISPLAYED_MESSAGES = filteredData;
         forceScrollToTheBottom();
       })
     } else {
@@ -209,7 +207,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       })
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -236,7 +234,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       })
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data)
+        this.DISPLAYED_MESSAGES.push(serverResponse.data)
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -312,7 +310,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         addToMessageHistory(this.User, this.User.name, currentMessage)
           .then(serverResponse=>{
             serverResponse.data.text = JSON.parse(serverResponse.data.text);
-            this.latestMessages.push(serverResponse.data);
+            this.DISPLAYED_MESSAGES.push(serverResponse.data);
             $interval.cancel(inactivityTimer);
             startInactivityTimer.call(this);
             forceScrollToTheBottom();
@@ -363,7 +361,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -380,7 +378,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -402,7 +400,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -419,7 +417,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -533,7 +531,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     this.searchFieldShown = !this.searchFieldShown
     if(this.searchQuery){
       this.searchQuery = "";
-      this.latestMessages = [];
+      this.DISPLAYED_MESSAGES = [];
       $timeout(()=>{
         this.getLatestMessages();
       },0)
@@ -592,8 +590,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         messagesShowed >= this.showOnLoadLimit &&
         !this.nothingToLoad &&
         !this.loadingInProgress ){
-      const topUl = document.querySelector("#old-messages") || latestUl;
-      const lastList = topUl.querySelector("li");
+      const lastList = latestUl.querySelector("li");
       $timeout(()=>{
         this.loadingInProgress = true;
         return $timeout(()=>{},0);
