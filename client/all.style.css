@@ -716,7 +716,9 @@ main {
         .chat-wrapper .chat-window #messages-window .dot.dot3 {
           animation-name: dotAnim3; }
       .chat-wrapper .chat-window #messages-window .repeated-list {
-        padding: 2em .5em; }
+        padding: 2em .5em;
+        margin-top: .3em;
+        border-radius: 9px; }
         .chat-wrapper .chat-window #messages-window .repeated-list .align-right {
           text-align: right; }
       .chat-wrapper .chat-window #messages-window .message {

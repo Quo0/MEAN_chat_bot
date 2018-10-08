@@ -234,7 +234,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     `apiKey=${API_KEY}`;
     queryNewsArticles(url)
       .then(newsApiResponse=>{
-        if(this.latestMessages.length <= 1){
+        if(this.DISPLAYED_MESSAGES.length <= 1){
           console.log(newsApiResponse);
           const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
           const randomArt = newsApiResponse.data.articles[randomN];
@@ -640,6 +640,23 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       if(!this.atBottom){
         $timeout.cancel(notScrolledUpTimer);
         notScrolledUpTimer = 0;
+      }
+    }
+    //reset notifications
+    if(this.notificationCount > 0){
+      const y = messagesWindow.getBoundingClientRect().bottom - 160;
+      const x = messagesWindow.getBoundingClientRect().width / 2;
+      const elem = document.elementFromPoint(x, y);
+
+      if(elem.className.indexOf("repeated-list") >= 0 ){
+        const allLis = document.querySelectorAll("#latest-messages > li");
+        const CT = allLis[this.DISPLAYED_MESSAGES.length - this.notificationCount +1];
+        if(CT === elem){
+          $timeout(()=>{
+            elem.style.background = "";
+          }, 200)
+          this.notificationCount-- ;
+        }
       }
     }
   }
