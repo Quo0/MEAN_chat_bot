@@ -32,6 +32,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   let inactivityTimer;
   let hoveredOverMenuTime = 0;
   let hoveredOverMenuTimer;
+  let notScrolledUpTimer = 0;
   this.User = currentUser;
   this.DISPLAYED_MESSAGES = [];
   this.showOnLoadLimit = 50;
@@ -603,7 +604,24 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       console.log("lzlzlzl" , this.loadingInProgress);
       $timeout(()=>{
         this.getSomePreviousMessages();
-      } , 2500)
+      } , 500);
+    }
+    // cutting the list
+    if(this.DISPLAYED_MESSAGES.length > 200){
+      if(this.atBottom && notScrolledUpTimer === 0){
+        $timeout.cancel(notScrolledUpTimer);
+        // console.log("started timer");
+        notScrolledUpTimer = $timeout(()=>{
+          this.DISPLAYED_MESSAGES = this.DISPLAYED_MESSAGES.slice(-this.showOnLoadLimit);
+          this.nothingToLoad = false;
+          // console.log("CUTTED");
+        }, 10000);
+      };
+      if(!this.atBottom){
+        // console.log("timer is cleared");
+        $timeout.cancel(notScrolledUpTimer);
+        notScrolledUpTimer = 0;
+      }
     }
   }
 }
