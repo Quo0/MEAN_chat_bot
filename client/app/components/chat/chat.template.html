@@ -26,17 +26,6 @@
     </div>
     <div class="chat-window">
       <div id="messages-window">
-        <div id="downloading" ng-show="chatCtrl.loadingInProgress">
-          <h4>downloading
-            <span class="dot dot1">.</span>
-            <span class="dot dot2">.</span>
-            <span class="dot dot3">.</span>
-          </h4>
-        </div>
-        <!-- templates for old messages without scrolling-->
-        <div ng-include="'client/app/components/chat/html-partials/old_messages.partial.html'"
-             ng-if="chatCtrl.oldMessages.length > 0">
-        </div>
         <!-- templates for latest messages with scrolling on message added -->
         <div ng-include="'client/app/components/chat/html-partials/latest_messages.partial.html'">
         </div>

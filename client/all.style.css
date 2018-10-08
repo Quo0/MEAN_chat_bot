@@ -590,28 +590,34 @@ main {
         cursor: pointer; }
         .chat-wrapper .chat-header #menu #burger.burger-showed-back .line::before {
           animation-name: topBurgerLineBack;
-          animation-duration: 1.5s;
-          animation-fill-mode: both; }
+          animation-duration: .4s;
+          animation-fill-mode: both;
+          animation-delay: .4s; }
         .chat-wrapper .chat-header #menu #burger.burger-showed-back .line {
           animation-name: centerBurgerLineBack;
-          animation-duration: 1.5s;
-          animation-fill-mode: both; }
+          animation-duration: .4s;
+          animation-fill-mode: both;
+          animation-delay: .2s; }
         .chat-wrapper .chat-header #menu #burger.burger-showed-back .line::after {
           animation-name: bottomBurgerLineBack;
-          animation-duration: 1.5s;
-          animation-fill-mode: both; }
+          animation-duration: .4s;
+          animation-fill-mode: both;
+          animation-delay: 0s; }
         .chat-wrapper .chat-header #menu #burger.burger-hovered .line::before {
           animation-name: topBurgerLine;
           animation-duration: 1.5s;
-          animation-fill-mode: both; }
+          animation-fill-mode: both;
+          animation-delay: 0s; }
         .chat-wrapper .chat-header #menu #burger.burger-hovered .line {
           animation-name: centerBurgerLine;
           animation-duration: 1.5s;
-          animation-fill-mode: both; }
+          animation-fill-mode: both;
+          animation-delay: 0s; }
         .chat-wrapper .chat-header #menu #burger.burger-hovered .line::after {
           animation-name: bottomBurgerLine;
           animation-duration: 1.5s;
-          animation-fill-mode: both; }
+          animation-fill-mode: both;
+          animation-delay: 0s; }
         .chat-wrapper .chat-header #menu #burger .line {
           position: absolute;
           top: 50%;
@@ -692,7 +698,8 @@ main {
     .chat-wrapper .chat-window #messages-window {
       padding: var(--block-padding);
       height: 100%;
-      overflow-y: auto; }
+      overflow-y: auto;
+      position: relative; }
       .chat-wrapper .chat-window #messages-window #downloading {
         width: 200px;
         position: absolute;
@@ -914,24 +921,21 @@ main {
 
 @keyframes topBurgerLineBack {
   0% {
-    left: 100%; }
+    background-color: transparent; }
   100% {
-    left: 0%; } }
+    background-color: #111; } }
 
 @keyframes centerBurgerLineBack {
   0% {
-    left: 100%;
-    background-color: transparent; }
-  30% {
     background-color: transparent; }
   100% {
-    left: 0;
     background-color: #111; } }
 
 @keyframes bottomBurgerLineBack {
   0% {
-    left: -100%; }
-  100% { } }
+    background-color: transparent; }
+  100% {
+    background-color: #111; } }
 
 @keyframes dotAnim1 {
   0% {
