@@ -171,9 +171,8 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       }, 2500) // time before he start typing
     } else {
       // time bot consider enought to send you something again if you refreshed or close the page
-      const lastMsgDate = new Date(this.latestMessages[this.latestMessages.length - 1].date);
+      const lastMsgDate = new Date(this.DISPLAYED_MESSAGES[this.DISPLAYED_MESSAGES.length - 1].date);
       if( Date.parse(new Date()) - Date.parse(lastMsgDate) > 1 * 60 * 1000 ){
-        console.log("BOT will greet you again");
         $timeout(()=>{
           //typing... emulation
           this.botIsBusy = true;
@@ -184,8 +183,6 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
             startInactivityTimer.call(this);
           }, 2500);// time he will type the msg
         }, 1500)// time before he start typing
-      } else {
-        console.log("BOT will not greet you again");
       }
     }
     tryToScrollToTheBottom.call(this, getScrollBottomPosition());
@@ -250,7 +247,6 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
           return addToMessageHistory( User, "BOT" , message);
         } else {
           console.log(newsApiResponse);
-          console.log("2nd way");
           const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
           const randomArt = newsApiResponse.data.articles[randomN];
           const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcomeAgain");
@@ -525,7 +521,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
           actionButtons.style.display = "flex";
         })
         .catch(err=>{
-          console.error(3);
+          console.error(err);
         })
     }
   }
@@ -626,10 +622,8 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     const messagesShowed = latestUl.querySelectorAll(".repeated-list").length;
     if( lessThanPersentage && messagesShowed >= this.showOnLoadLimit &&
         !this.nothingToLoad && !this.loadingInProgress ){
-      console.log(messagesWindow.scrollTop / messagesWindow.scrollHeight * 100);
       const lastList = latestUl.querySelector("li");
       this.loadingInProgress = true;
-      console.log("lzlzlzl" , this.loadingInProgress);
       $timeout(()=>{
         this.getSomePreviousMessages();
       } , 500);
@@ -638,15 +632,12 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     if(this.DISPLAYED_MESSAGES.length > 200){
       if(this.atBottom && notScrolledUpTimer === 0){
         $timeout.cancel(notScrolledUpTimer);
-        // console.log("started timer");
         notScrolledUpTimer = $timeout(()=>{
           this.DISPLAYED_MESSAGES = this.DISPLAYED_MESSAGES.slice(-this.showOnLoadLimit);
           this.nothingToLoad = false;
-          // console.log("CUTTED");
         }, 10000);
       };
       if(!this.atBottom){
-        // console.log("timer is cleared");
         $timeout.cancel(notScrolledUpTimer);
         notScrolledUpTimer = 0;
       }
