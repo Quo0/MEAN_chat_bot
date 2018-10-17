@@ -1,5 +1,18 @@
+
 <ul id="latest-messages">
-  <li ng-repeat="message in chatCtrl.latestMessages" class="repeated-list">
+  <li>
+    <div id="downloading" ng-show="chatCtrl.loadingInProgress">
+      <h4>downloading
+        <span class="dot dot1">.</span>
+        <span class="dot dot2">.</span>
+        <span class="dot dot3">.</span>
+      </h4>
+    </div>
+  </li>
+  <li been-seen-status
+      showonloadlimit="{{chatCtrl.showOnLoadLimit}}"
+      atbottom="{{chatCtrl.atBottom}}"
+      ng-repeat="message in chatCtrl.DISPLAYED_MESSAGES" class="repeated-list">
     <!-- user message template -->
     <div ng-if="message.whoSent !== 'BOT'" class="align-right">
       <div class="message user-message">
@@ -32,8 +45,35 @@
         <p>Look that I red resently at {{message.text.article.source.name}} !!!</p>
         <br>
         <h4>{{message.text.article.title}}</h4>
-        <a href="{{message.text.article.url}}">
-          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+        <a href="{{message.text.article.url}}" target="_blank">
+          <img loading-check-directive atbottom="{{chatCtrl.atBottom}}" ng-src="{{message.text.article.urlToImage}}">
+        </a>
+        <p>{{message.text.article.description || ""}}</p>
+        <br>
+        <a href="{{message.text.article.url}}" target="_blank">
+          Click to read full article...
+        </a>
+        <div class="message-details">
+          <p>{{message.date | formatDate}}</p>
+        </div>
+      </div>
+    </div>
+    <!-- BOT welcome-again template -->
+    <div ng-if="message.text.type === 'welcomeAgain' " class="message">
+      <img ng-src="http://localhost:4000\{{message.avatar}}" alt="">
+      <div class="message-body">
+        <h3>{{message.whoSent}}</h3>
+        <ul>
+          <li ng-repeat="paragraf in message.text.frases">
+            {{paragraf}}
+          </li>
+        </ul>
+        <p>Look that I red resently at {{message.text.article.source.name}} !!!</p>
+        <br>
+        <h4>{{message.text.article.title}}</h4>
+        <a href="{{message.text.article.url}}"
+          ng-show="message.text.article.urlToImage">
+          <img loading-check-directive atbottom="{{chatCtrl.atBottom}}" ng-src="{{message.text.article.urlToImage}}">
         </a>
         <p>{{message.text.article.description || ""}}</p>
         <br>
@@ -59,11 +99,11 @@
         <p>This one is from {{message.text.article.source.name}}</p>
         <br>
         <h4>{{message.text.article.title}}</h4>
-        <a href="{{message.text.article.url}}">
-          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+        <a href="{{message.text.article.url}}" target="_blank">
+          <img loading-check-directive atbottom="{{chatCtrl.atBottom}}" ng-src="{{message.text.article.urlToImage}}">
         </a>
         <p>{{message.text.article.description || ""}}</p>
-        <a href="{{message.text.article.url}}">
+        <a href="{{message.text.article.url}}" target="_blank">
           Click to read full article...
         </a>
         <div class="message-details">

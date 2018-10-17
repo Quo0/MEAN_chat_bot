@@ -18,8 +18,12 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   if(!currentUser){ window.location.hash = "#/welcome"}
   //DOM
   const messagesWindow = document.getElementById("messages-window");
+  const chatHeader = document.querySelector(".chat-header");
+  const actionButtons = chatHeader.querySelector(".action-buttons");
+  const burger = chatHeader.querySelector("#burger");
   //
   const API_KEY = "16f021a3d7ed41c9a205cd87a7c877a5";
+  const daysToSearchInNews = 5;
   //
   const botsCommands = {
     query: /^BOT show( me){0,1}:\s(\w{1,}\s{0,1}){1,}$/,
@@ -27,10 +31,12 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   }
   let inactivityTime = 0;
   let inactivityTimer;
+  let hoveredOverMenuTime = 0;
+  let hoveredOverMenuTimer;
+  let notScrolledUpTimer = 0;
   this.User = currentUser;
-  this.latestMessages = [];
-  this.oldMessages = [];
-  this.showOnLoadLimit = 30;
+  this.DISPLAYED_MESSAGES = [];
+  this.showOnLoadLimit = 50;
   this.notificationCount = 0;
   //methods
   this.activateBot = activateBot;
@@ -39,7 +45,10 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   this.clearSearchQuery = clearSearchQuery;
   this.onTextAdded = onTextAdded;
   this.scrollToNewMessages = scrollToNewMessages;
+  this.showMenu = showMenu;
+  this.hideMenu = hideMenu;
   this.logOut = logOut;
+  this.resetHoverOverMenuTimer = resetHoverOverMenuTimer;
   //
   this.getLatestMessages = getLatestMessages;
   this.getSomePreviousMessages = getSomePreviousMessages;
@@ -48,7 +57,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   this.getBotsRandomFrase = getBotsRandomFrase;
   this.showBotsQueryAnswer = showBotsQueryAnswer;
   this.getLatestMessages();
-  this.activateBot();
+  // this.activateBot();
 
   // func bodies
 
@@ -69,15 +78,18 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         latestMessages.forEach(message=>{
           message.text = JSON.parse(message.text)
         });
-        this.latestMessages = latestMessages;
+        this.DISPLAYED_MESSAGES = latestMessages;
         forceScrollToTheBottom();
+      })
+      .then(()=>{
+        this.activateBot();
       })
       .catch(err=>{
         console.error(err);
       })
   }
   function getSomePreviousMessages(){
-    const newOffset = this.latestMessages.length + this.oldMessages.length;
+    const newOffset = this.DISPLAYED_MESSAGES.length;
     const req = {
       method: "GET",
       url: `/chat/${this.User.id}`,
@@ -95,16 +107,22 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         if(serverResponse.data.fetched){
           this.nothingToLoad = true;
           const restMessages = serverResponse.data.lastRecords;
+          if(messagesWindow.scrollTop <= 1){
+            messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
+          }
           restMessages.reverse().forEach(message=>{
             message.text = JSON.parse(message.text);
-            this.oldMessages.unshift(message)
+            this.DISPLAYED_MESSAGES.unshift(message)
           })
-            this.loadingInProgress = false;
+          this.loadingInProgress = false;
         } else {
           const restMessages = serverResponse.data;
+          if(messagesWindow.scrollTop <= 1){
+            messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
+          }
           restMessages.reverse().forEach(message=>{
             message.text = JSON.parse(message.text);
-            this.oldMessages.unshift(message)
+            this.DISPLAYED_MESSAGES.unshift(message)
           })
           this.loadingInProgress = false;
         }
@@ -131,17 +149,16 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         filteredData.forEach(message=>{
           message.text = JSON.parse(message.text)
         });
-        this.latestMessages = filteredData;
-        this.oldMessages = [];
+        this.DISPLAYED_MESSAGES = filteredData;
         forceScrollToTheBottom();
       })
     } else {
       this.getLatestMessages();
+      hideMenu.call(this);
     }
   }
 
   function activateBot(){
-    //  if msg hist
     if( Date.parse(new Date()) - Date.parse(this.User.loginTime ) < 5000 ){
       $timeout(()=>{
         //typing... emulation
@@ -154,16 +171,20 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         }, 3500); // time he will type the msg
       }, 2500) // time before he start typing
     } else {
-      $timeout(()=>{
-        //typing... emulation
-        this.botIsBusy = true;
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+      // time bot consider enought to send you something again if you refreshed or close the page
+      const lastMsgDate = new Date(this.DISPLAYED_MESSAGES[this.DISPLAYED_MESSAGES.length - 1].date);
+      if( Date.parse(new Date()) - Date.parse(lastMsgDate) > 1 * 60 * 1000 ){
         $timeout(()=>{
-          this.botIsBusy = false;
-          greetAgain.call(this);
-          startInactivityTimer.call(this);
-        }, 2500);// time he will type the msg
-      }, 1500)// time before he start typing
+          //typing... emulation
+          this.botIsBusy = true;
+          tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+          $timeout(()=>{
+            this.botIsBusy = false;
+            greetAgain.call(this);
+            startInactivityTimer.call(this);
+          }, 2500);// time he will type the msg
+        }, 1500)// time before he start typing
+      }
     }
     tryToScrollToTheBottom.call(this, getScrollBottomPosition());
   }
@@ -171,9 +192,16 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   // bots functions
 
   function showBotsQueryAnswer(User, query){
+    const fromMonth = (function(){
+      const currentMonth = new Date().getMonth() + 1;
+      if(currentMonth < 10){
+        currentMonth = "0"+currentMonth;
+      }
+      return currentMonth;
+    })();
     const url = 'https://newsapi.org/v2/everything?' +
           `q="${query}"&` +
-          'from=2018-09-10&' +
+          'from=${new Date().getFullYear()}-${fromMonth}-${new Date().getDate() - daysToSearchInNews}&' +
           'sortBy=relevancy&' +
           `apiKey=${API_KEY}`;
     queryNewsArticles(url)
@@ -200,7 +228,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       })
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -214,20 +242,33 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     `apiKey=${API_KEY}`;
     queryNewsArticles(url)
       .then(newsApiResponse=>{
-        console.log(newsApiResponse);
-        const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length)
-        const randomArt = newsApiResponse.data.articles[randomN]
-        const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcome");
-        const message = {
-          type: "welcome",
-          frases: botsRandomWelcomeFrase,
-          article: randomArt
+        if(this.DISPLAYED_MESSAGES.length <= 1){
+          console.log(newsApiResponse);
+          const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
+          const randomArt = newsApiResponse.data.articles[randomN];
+          const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcome");
+          const message = {
+            type: "welcome",
+            frases: botsRandomWelcomeFrase,
+            article: randomArt
+          }
+          return addToMessageHistory( User, "BOT" , message);
+        } else {
+          console.log(newsApiResponse);
+          const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
+          const randomArt = newsApiResponse.data.articles[randomN];
+          const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcomeAgain");
+          const message = {
+            type: "welcomeAgain",
+            frases: botsRandomWelcomeFrase,
+            article: randomArt
+          }
+          return addToMessageHistory( User, "BOT" , message);
         }
-        return addToMessageHistory( User, "BOT" , message)
       })
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data)
+        this.DISPLAYED_MESSAGES.push(serverResponse.data)
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -242,6 +283,10 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
       ["Welcome welcome welcome ! ! ! ! !",":Р"],
       ["SUPERRRRRRRR welcome frase3","\\(*_*)/"],
       ["OLOLOLOLOL welcome!!!","\\(+_+ )_"]
+    ]
+    const welcomeAgainFrases = [
+      ["Hey! I'm happy you loged in again!","Haven't seen you for ages =)"],
+      ["WHOOOOOW! Come on!","Didn't expect you will come back again :p","Wanna get some news?"]
     ]
     const greetAgain = [
       ["Welcome back, my friend!","Want me to show you some more cool news?)"],
@@ -282,6 +327,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     ]
 
     if( type === "welcome" ){ selectedTypeArr = welcomeFrases} else
+    if( type === "welcomeAgain" ){ selectedTypeArr = welcomeAgainFrases} else
     if( type === "greetAgain"){ selectedTypeArr = greetAgain} else
     if( type === "inactivity" ){ selectedTypeArr = inactivityFrases} else
     if( type === "queryAnswer" ){ selectedTypeArr = queryAnswerFrases} else
@@ -296,50 +342,52 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
 
   function onSubmit(){
     if(this.newMessage){
-      const currentMessage = this.newMessage;
-      this.newMessage = "";
-      inactivityTime = 0;
-      addToMessageHistory(this.User, this.User.name, currentMessage)
-        .then(serverResponse=>{
-          serverResponse.data.text = JSON.parse(serverResponse.data.text);
-          this.latestMessages.push(serverResponse.data);
-          $interval.cancel(inactivityTimer);
-          startInactivityTimer.call(this);
-          forceScrollToTheBottom();
-        })
-        .then(()=>{
-          return $timeout(()=>{
-            this.botIsBusy = true;
-            tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
-          }, 1000)
-        })
-        .then(()=>{
-          if( currentMessage.match( botsCommands.query ) ){
-            const queryIndex = currentMessage.indexOf(":") + 2 ;
-            const query = currentMessage.slice(queryIndex);
-            $timeout(()=>{
-              this.botIsBusy = false;
-              this.showBotsQueryAnswer(this.User, query);
-            }, 3000)
-          } else
-          if( currentMessage.match( botsCommands.help ) ){
-            $timeout(()=>{
-              this.botIsBusy = false;
-              showBotHelp.call(this);
-            }, 2500)
-          } else {
-            $timeout(()=>{
-              this.botIsBusy = false;
-              showBotDontUnderstand.call(this);
-            }, 2000)
-          }
-        })
-        .then(()=>{
+      if(this.newMessage.trim() != ""){
+        const currentMessage = this.newMessage;
+        this.newMessage = "";
+        inactivityTime = 0;
+        addToMessageHistory(this.User, this.User.name, currentMessage)
+          .then(serverResponse=>{
+            serverResponse.data.text = JSON.parse(serverResponse.data.text);
+            this.DISPLAYED_MESSAGES.push(serverResponse.data);
+            $interval.cancel(inactivityTimer);
+            startInactivityTimer.call(this);
+            forceScrollToTheBottom();
+          })
+          .then(()=>{
+            return $timeout(()=>{
+              this.botIsBusy = true;
+              tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+            }, 1000)
+          })
+          .then(()=>{
+            if( currentMessage.match( botsCommands.query ) ){
+              const queryIndex = currentMessage.indexOf(":") + 2 ;
+              const query = currentMessage.slice(queryIndex);
+              $timeout(()=>{
+                this.botIsBusy = false;
+                this.showBotsQueryAnswer(this.User, query);
+              }, 3000)
+            } else
+            if( currentMessage.match( botsCommands.help ) ){
+              $timeout(()=>{
+                this.botIsBusy = false;
+                showBotHelp.call(this);
+              }, 2500)
+            } else {
+              $timeout(()=>{
+                this.botIsBusy = false;
+                showBotDontUnderstand.call(this);
+              }, 2000)
+            }
+          })
+          .then(()=>{
 
-        })
-        .catch(err=>{
-          console.log(err);
-        })
+          })
+          .catch(err=>{
+            console.log(err);
+          })
+      }
     }
   }
 
@@ -352,7 +400,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -369,7 +417,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -391,7 +439,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -408,7 +456,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
         serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.latestMessages.push(serverResponse.data);
+        this.DISPLAYED_MESSAGES.push(serverResponse.data);
         tryToScrollToTheBottom.call(this, getScrollBottomPosition());
       })
       .catch(err=>{
@@ -461,6 +509,57 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     forceScrollToTheBottom();
   }
 
+  function showMenu(){
+    if(!this.menuBeenHovered){
+      burger.classList.add("burger-hovered");
+      const promice = (()=>{
+        this.menuBeenHovered = true;
+        return $timeout(()=>{
+          burger.style.opacity = 0;
+        }, 1500)
+      })();
+      promice
+        .then(()=>{
+          return $timeout(()=>{
+            // wait a bit before the hiding burger
+          }, 200)
+        })
+        .then(()=>{
+          burger.style.display = "none";
+          actionButtons.style.display = "flex";
+        })
+        .catch(err=>{
+          console.error(err);
+        })
+    }
+  }
+  function hideMenu(){
+    if(this.menuBeenHovered){
+      hoveredOverMenuTimer = $interval(()=>{
+        hoveredOverMenuTime ++;
+        if(hoveredOverMenuTime > 3){
+          if(!this.searchQuery){
+            this.menuBeenHovered = false;
+            this.searchFieldShown = false;
+            burger.classList.remove("burger-hovered");
+            burger.classList.add("burger-showed-back");
+            burger.style.opacity = 1;
+            burger.style.display = "block";
+            actionButtons.style.display = "none";
+          } else {
+            hoveredOverMenuTime = 0;
+          }
+          $interval.cancel(hoveredOverMenuTimer);
+        }
+      },1000)
+    }
+  }
+
+  function resetHoverOverMenuTimer(){
+    hoveredOverMenuTime = 0;
+    $interval.cancel(hoveredOverMenuTimer);
+  }
+
   function logOut(){
     $interval.cancel(inactivityTimer);
     localStorage.clear();
@@ -468,9 +567,10 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   }
 
   function clearSearchQuery(){
+    this.searchFieldShown = !this.searchFieldShown
     if(this.searchQuery){
       this.searchQuery = "";
-      this.latestMessages = [];
+      this.DISPLAYED_MESSAGES = [];
       $timeout(()=>{
         this.getLatestMessages();
       },0)
@@ -503,14 +603,19 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
 
   function onTextAdded(e){
     if(e.code === "Enter" && !e.shiftKey){
-      this.onSubmit();
+      if(this.newMessage.trim() != ""){
+        this.onSubmit();
+      } else {
+        this.newMessage = "";
+      }
     }
     if(e.code === "Enter" && e.shiftKey){
-      this.newMessage+="\n"
+      this.newMessage+="";
     }
   }
 
   messagesWindow.onscroll = ()=>{
+    // rules for BOTTOM
     if(getScrollBottomPosition() <= 1){
       this.atBottom = true;
       $timeout(()=>{
@@ -519,35 +624,48 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     } else {
       this.atBottom = false;
     }
+    // rules for TOP
+    const lessThanPersentage = messagesWindow.scrollTop / messagesWindow.scrollHeight * 100 < 40 ;
     const latestUl = document.querySelector("#latest-messages");
     const messagesShowed = latestUl.querySelectorAll(".repeated-list").length;
-    if( messagesWindow.scrollTop <= 1 &&
-        messagesShowed >= this.showOnLoadLimit &&
-        !this.nothingToLoad &&
-        !this.loadingInProgress ){
-      const topUl = document.querySelector("#old-messages") || latestUl;
-      console.log(topUl);
-      const lastList = topUl.querySelector("li");
+    if( lessThanPersentage && messagesShowed >= this.showOnLoadLimit &&
+        !this.nothingToLoad && !this.loadingInProgress ){
+      const lastList = latestUl.querySelector("li");
+      this.loadingInProgress = true;
       $timeout(()=>{
-        console.log("step1");
-        this.loadingInProgress = true;
-        return $timeout(()=>{},0);
-      }, 0)
-      .then(()=>{
-        console.log("step2");
-        return $timeout(()=>{
-          this.getSomePreviousMessages();
-          console.log(lastList);
-          lastList.scrollIntoView()
-          messagesWindow.scrollTop = messagesWindow.scrollTop - 14 // for smoothing(1em - 2px);
-        } , 2500)
-      })
-      .then(()=>{
-        console.log("step3");
-        return $timeout(()=>{
-          messagesWindow.scrollTop = messagesWindow.scrollTop - 80
-        } , 150)
-      })
+        this.getSomePreviousMessages();
+      } , 500);
+    }
+    // cutting the list
+    if(this.DISPLAYED_MESSAGES.length > 200){
+      if(this.atBottom && notScrolledUpTimer === 0){
+        $timeout.cancel(notScrolledUpTimer);
+        notScrolledUpTimer = $timeout(()=>{
+          this.DISPLAYED_MESSAGES = this.DISPLAYED_MESSAGES.slice(-this.showOnLoadLimit);
+          this.nothingToLoad = false;
+        }, 3000);
+      };
+      if(!this.atBottom){
+        $timeout.cancel(notScrolledUpTimer);
+        notScrolledUpTimer = 0;
+      }
+    }
+    //reset notifications
+    if(this.notificationCount > 0){
+      const y = messagesWindow.getBoundingClientRect().bottom - 160;
+      const x = messagesWindow.getBoundingClientRect().width / 2;
+      const elem = document.elementFromPoint(x, y);
+
+      if(elem.className.indexOf("repeated-list") >= 0 ){
+        const allLis = document.querySelectorAll("#latest-messages > li");
+        const CT = allLis[this.DISPLAYED_MESSAGES.length - this.notificationCount +1];
+        if(CT === elem){
+          $timeout(()=>{
+            elem.style.background = "";
+          }, 200)
+          this.notificationCount-- ;
+        }
+      }
     }
   }
 }
