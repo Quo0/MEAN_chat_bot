@@ -3,14 +3,16 @@
     <h2>Join the Bot</h2>
     <form name="loginForm" novalidate ng-submit="logCtrl.onSubmit()">
       <input type="text" name="email" placeholder="User name"
-        ng-model="logCtrl.User.name">
+        ng-model="logCtrl.User.name"
+        ng-change="logCtrl.onInputChange()">
       <input type="password" name="password" placeholder="password"
         ng-model="logCtrl.User.password">
       <button type="submit" name="submit">
         Sign in
       </button>
       <div class="errors" ng-show="logCtrl.serverLoginErrors">
-        <p>{{logCtrl.serverLoginErrors}}</p>
+        <p ng-show="logCtrl.User.name && logCtrl.User.name !== '' ">{{logCtrl.serverLoginErrors}}</p>
+        <p ng-show="!logCtrl.User.name || logCtrl.User.name == '' ">Enter your User name</p>
       </div>
     </form>
   </div>
