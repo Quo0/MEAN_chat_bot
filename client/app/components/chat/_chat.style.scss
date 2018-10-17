@@ -204,6 +204,7 @@
           .align-right{
             text-align: right;
           }
+          transition: background .5s ease-in-out;
         }
         .message{
           display: inline-flex;

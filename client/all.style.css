@@ -718,7 +718,8 @@ main {
       .chat-wrapper .chat-window #messages-window .repeated-list {
         padding: 2em .5em;
         margin-top: .3em;
-        border-radius: 9px; }
+        border-radius: 9px;
+        transition: background .5s ease-in-out; }
         .chat-wrapper .chat-window #messages-window .repeated-list .align-right {
           text-align: right; }
       .chat-wrapper .chat-window #messages-window .message {

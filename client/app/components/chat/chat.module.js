@@ -23,6 +23,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   const burger = chatHeader.querySelector("#burger");
   //
   const API_KEY = "16f021a3d7ed41c9a205cd87a7c877a5";
+  const daysToSearchInNews = 5;
   //
   const botsCommands = {
     query: /^BOT show( me){0,1}:\s(\w{1,}\s{0,1}){1,}$/,
@@ -191,9 +192,16 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
   // bots functions
 
   function showBotsQueryAnswer(User, query){
+    const fromMonth = (function(){
+      const currentMonth = new Date().getMonth() + 1;
+      if(currentMonth < 10){
+        currentMonth = "0"+currentMonth;
+      }
+      return currentMonth;
+    })();
     const url = 'https://newsapi.org/v2/everything?' +
           `q="${query}"&` +
-          'from=2018-09-10&' +
+          'from=${new Date().getFullYear()}-${fromMonth}-${new Date().getDate() - daysToSearchInNews}&' +
           'sortBy=relevancy&' +
           `apiKey=${API_KEY}`;
     queryNewsArticles(url)
@@ -635,7 +643,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
         notScrolledUpTimer = $timeout(()=>{
           this.DISPLAYED_MESSAGES = this.DISPLAYED_MESSAGES.slice(-this.showOnLoadLimit);
           this.nothingToLoad = false;
-        }, 10000);
+        }, 3000);
       };
       if(!this.atBottom){
         $timeout.cancel(notScrolledUpTimer);
