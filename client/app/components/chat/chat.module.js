@@ -2,6 +2,7 @@ angular.module("chatScreen",[])
   .component("chatScreen", {
     templateUrl: "client/app/components/chat/chat.template.html",
     controller: [
+      "$rootScope",
       "$http",
       "$timeout",
       "$interval",
@@ -12,7 +13,7 @@ angular.module("chatScreen",[])
     controllerAs: "chatCtrl"
   })
 
-function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNewsArticles){
+function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHistory, queryNewsArticles){
   //redirection
   const currentUser = JSON.parse(localStorage.getItem("User"))
   if(!currentUser){ window.location.hash = "#/welcome"}
@@ -618,6 +619,7 @@ function chatScreenCtrl($http, $timeout, $interval, addToMessageHistory, queryNe
     // rules for BOTTOM
     if(getScrollBottomPosition() <= 1){
       this.atBottom = true;
+      $rootScope.$broadcast("atBottom");
       $timeout(()=>{
         this.notificationCount = 0; // becouse of inactivityTimer
       },0)

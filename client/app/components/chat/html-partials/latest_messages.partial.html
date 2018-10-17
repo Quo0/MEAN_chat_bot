@@ -12,6 +12,7 @@
   <li been-seen-status
       showonloadlimit="{{chatCtrl.showOnLoadLimit}}"
       atbottom="{{chatCtrl.atBottom}}"
+      index="{{$index}}"
       ng-repeat="message in chatCtrl.DISPLAYED_MESSAGES" class="repeated-list">
     <!-- user message template -->
     <div ng-if="message.whoSent !== 'BOT'" class="align-right">
