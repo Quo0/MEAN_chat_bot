@@ -45,8 +45,6 @@ const upload = multer({
 router.post("/" , upload.any() , registrationPOST);
 
 function registrationPOST(req,resp,next){
-  console.log("fromPOST");
-  console.log(req.body);
   UserModel.find({name: req.body.name} , (err,data)=>{
     if(err){console.error(err);}
     if(data.length){
@@ -112,7 +110,13 @@ function registrationPOST(req,resp,next){
         }
         if(validationErrors){
           fs.unlink(`./server/uploads/${filenameFromStorage}` , (err)=>{
-            if(err){ console.log(err) }
+            if (err) {
+              if(err.code === "ENOENT"){
+                console.log("nothing to delete");
+              } else {
+                console.error(err)
+              }
+            }
           })
           resp.send({
             respText: "WE GOT SOME ERRORS",

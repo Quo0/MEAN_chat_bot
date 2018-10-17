@@ -7,7 +7,8 @@
         require: "ngModel",
         link: function(scope,element,attrs,ngModel) {
           element.bind("change", function(changeEvent) {
-            scope.regCtrl.serverRegErrors.avatarType ='' // to reset serverError
+            scope.regCtrl.serverRegErrors.avatarType =''; // to reset serverError
+            scope.regCtrl.serverRegErrors.avatar = false; // to reset serverError
 
             if(changeEvent.target.files.length > 0){
               const files = changeEvent.target.files[0].name;

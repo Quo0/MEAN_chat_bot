@@ -470,6 +470,25 @@ main {
     .registration-wrapper form ::placeholder {
       color: var(--clr-dark-green);
       letter-spacing: 2px; }
+    .registration-wrapper form #choose-avatar {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-pack: center;
+          justify-content: center;
+      color: var(--clr-dark-green);
+      -ms-flex-align: center;
+          align-items: center;
+      letter-spacing: 2px; }
+      .registration-wrapper form #choose-avatar label {
+        padding: .7em 0 .7em 2em;
+        cursor: pointer; }
+        .registration-wrapper form #choose-avatar label:hover {
+          color: var(--clr-blue); }
+      .registration-wrapper form #choose-avatar #avatar-filename {
+        color: var(--clr-blue);
+        padding-left: 2em; }
+    .registration-wrapper form #avatar {
+      display: none; }
     .registration-wrapper form button {
       color: var(--clr-green);
       display: block;
@@ -494,6 +513,8 @@ main {
         font-size: .8em;
         color: var(--clr-red);
         font-weight: bold; }
+    .registration-wrapper form .errors.file-errors {
+      text-align: center; }
 
 .login-wrapper {
   font-family: monospace;

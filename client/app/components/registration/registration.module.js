@@ -52,13 +52,12 @@ function registrationScreenCtrl($http, $scope, $timeout){
     // forming formData
     const formData = new FormData;
     for(prop in this.newUser){
-      formData.append(prop, this.newUser[prop])
+      formData.append(prop, this.newUser[prop]);
     }
     let file = document.getElementById("avatar").files[0]
-    if(!file){ file = "" } // to get rid of 'undefined' string on a server
+    if(!file){ file = "" }; // to get rid of 'undefined' string on a server
                            // at the req.body.avatar
-    console.log(file);
-    formData.append("avatar", file)
+    formData.append("avatar", file);
     //
     const req = {
       method: "POST",
@@ -67,17 +66,15 @@ function registrationScreenCtrl($http, $scope, $timeout){
         "Content-Type": undefined
       },
       data: formData
-    }
+    };
     $http(req)
       .then(serverResponse=>{
         console.log(serverResponse)
         if(serverResponse.data.errors){
-          console.log(serverResponse.data.errors);
           serverResponse.data.errors.forEach(err=>{
             this.serverRegErrors[err.param] = err.msg
             this.registrationSucceed = false;
           })
-          console.log(this.serverRegErrors);
         } else {
           this.registrationSucceed = true;
           $timeout(()=>{

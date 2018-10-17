@@ -15,8 +15,6 @@ const chatRoute = require("./routes/chat.route");
 const validatorOptions = {
 	customValidators: {
 		matchRegExps: (inputParam , regExp) => {
-			// console.log("inputParam" , inputParam)
-			// console.log("regExp" , regExp)
 			if(inputParam){
 				return inputParam.match(regExp)
 			} else { return false }
