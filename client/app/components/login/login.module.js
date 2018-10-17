@@ -23,7 +23,6 @@ function loginScreenCtrl($http, $timeout){
           // handle server errors ( db error occured )
         }
         if(serverResponse.data.accessError){
-          console.log(serverResponse.data.accessError);
           this.serverLoginErrors = serverResponse.data.accessError
         } else {
           localStorage.setItem("User", JSON.stringify({
@@ -42,5 +41,9 @@ function loginScreenCtrl($http, $timeout){
       .catch(err=>{
         console.log(err);
       })
+  }
+
+  this.onInputChange = function(){
+    this.serverLoginErrors = "";
   }
 }
