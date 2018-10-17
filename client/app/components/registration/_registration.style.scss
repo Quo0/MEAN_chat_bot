@@ -40,6 +40,27 @@
       color: var(--clr-dark-green);
       letter-spacing: 2px;
     }
+    #choose-avatar{
+      display: flex;
+      justify-content: center;
+      color: var(--clr-dark-green);
+      align-items: center;
+      letter-spacing: 2px;
+      label{
+        padding: .7em 0 .7em 2em;
+        cursor: pointer;
+        &:hover{
+          color: var(--clr-blue);
+        }
+      }
+      #avatar-filename{
+        color: var(--clr-blue);
+        padding-left: 2em;
+      }
+    }
+    #avatar{
+      display: none;
+    }
     button{
       color: var(--clr-green);
       display: block;
@@ -68,6 +89,9 @@
         color: var(--clr-red);
         font-weight: bold;
       }
+    }
+    .errors.file-errors{
+        text-align: center;
     }
   }
 }

@@ -55,12 +55,18 @@
           {{regCtrl.checkRules.confirmPassword.failMessage}}
         </p>
       </div>
+      <div id="choose-avatar">
+        <label for="avatar">
+          Chose your avatar
+        </label>
+        <p id="avatar-filename">{{regCtrl.newUser.avatar}}</p>
+      </div>
       <input type="file" name="avatar" id="avatar" accept="image/*"
         file-model-directive
         ng-model="regCtrl.newUser.avatar"
         ng-model-options="{ debounce: 500 }"
         ng-change="regCtrl.showValidationTips('avatar')">
-      <div class="errors">
+      <div class="errors file-errors">
         <p ng-show="regCtrl.showValidationTips('avatar')">
           {{regCtrl.checkRules.avatar.failMessage}}
         </p>

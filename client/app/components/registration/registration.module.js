@@ -71,12 +71,10 @@ function registrationScreenCtrl($http, $scope, $timeout){
       .then(serverResponse=>{
         console.log(serverResponse)
         if(serverResponse.data.errors){
-          console.log(serverResponse.data.errors);
           serverResponse.data.errors.forEach(err=>{
             this.serverRegErrors[err.param] = err.msg
             this.registrationSucceed = false;
           })
-          console.log(this.serverRegErrors);
         } else {
           this.registrationSucceed = true;
           $timeout(()=>{
