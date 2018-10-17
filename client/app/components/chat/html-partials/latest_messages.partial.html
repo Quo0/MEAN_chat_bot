@@ -46,7 +46,7 @@
         <br>
         <h4>{{message.text.article.title}}</h4>
         <a href="{{message.text.article.url}}" target="_blank">
-          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+          <img loading-check-directive atbottom="{{chatCtrl.atBottom}}" ng-src="{{message.text.article.urlToImage}}">
         </a>
         <p>{{message.text.article.description || ""}}</p>
         <br>
@@ -73,7 +73,7 @@
         <h4>{{message.text.article.title}}</h4>
         <a href="{{message.text.article.url}}"
           ng-show="message.text.article.urlToImage">
-          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+          <img loading-check-directive atbottom="{{chatCtrl.atBottom}}" ng-src="{{message.text.article.urlToImage}}">
         </a>
         <p>{{message.text.article.description || ""}}</p>
         <br>
@@ -100,7 +100,7 @@
         <br>
         <h4>{{message.text.article.title}}</h4>
         <a href="{{message.text.article.url}}" target="_blank">
-          <img loading-check-directive ctrl="chatCtrl" ng-src="{{message.text.article.urlToImage}}">
+          <img loading-check-directive atbottom="{{chatCtrl.atBottom}}" ng-src="{{message.text.article.urlToImage}}">
         </a>
         <p>{{message.text.article.description || ""}}</p>
         <a href="{{message.text.article.url}}" target="_blank">
