@@ -27,8 +27,7 @@
     <div class="chat-window">
       <div id="messages-window">
         <!-- templates for latest messages with scrolling on message added -->
-        <div ng-include="'client/app/components/chat/html-partials/latest_messages.partial.html'">
-        </div>
+        <div ng-include="'client/app/components/chat/html-partials/latest_messages.partial.html'"></div>
         <!-- for Bot typing imitation -->
         <div id="BOT-is-typing">
           <div ng-show="chatCtrl.botIsBusy" class="message">
@@ -44,6 +43,9 @@
             </div>
           </div>
         </div>
+      </div>
+      <div id="messages-window-search">
+        <div ng-include="'client/app/components/chat/html-partials/search_messages.partial.html'"></div>
       </div>
     </div>
     <div class="input-block">

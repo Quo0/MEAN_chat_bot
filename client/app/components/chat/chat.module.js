@@ -19,6 +19,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
   if(!currentUser){ window.location.hash = "#/welcome"}
   //DOM
   const messagesWindow = document.getElementById("messages-window");
+  const messagesSearchWindow = document.getElementById("messages-window-search");
   const chatHeader = document.querySelector(".chat-header");
   const actionButtons = chatHeader.querySelector(".action-buttons");
   const burger = chatHeader.querySelector("#burger");
@@ -37,6 +38,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
   let notScrolledUpTimer = 0;
   this.User = currentUser;
   this.DISPLAYED_MESSAGES = [];
+  this.SEARCH_DISPLAYED_MESSAGES = [];
   this.showOnLoadLimit = 50;
   this.notificationCount = 0;
   //methods
@@ -53,6 +55,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
   //
   this.getLatestMessages = getLatestMessages;
   this.getSomePreviousMessages = getSomePreviousMessages;
+  this.getSomePreviousSearchedMessages = getSomePreviousSearchedMessages;
   //
   this.showBotsWelcome = showBotsWelcome;
   this.getBotsRandomFrase = getBotsRandomFrase;
@@ -111,17 +114,17 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
           if(messagesWindow.scrollTop <= 1){
             messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
           }
-          restMessages.reverse().forEach(message=>{
+          restMessages.forEach(message=>{
             message.text = JSON.parse(message.text);
             this.DISPLAYED_MESSAGES.unshift(message)
           })
           this.loadingInProgress = false;
         } else {
-          const restMessages = serverResponse.data;
+          const messagesPack = serverResponse.data;
           if(messagesWindow.scrollTop <= 1){
             messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
           }
-          restMessages.reverse().forEach(message=>{
+          messagesPack.forEach(message=>{
             message.text = JSON.parse(message.text);
             this.DISPLAYED_MESSAGES.unshift(message)
           })
@@ -131,16 +134,26 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
       .catch(err=>{
         console.error(err);
       })
-    // return $timeout(()=>{},0)
   }
 
+  //search;
+
   function onSearchQueryChange(){
+    //resets
+    this.nothingToLoadSearch = false;
+    this.noSearchResults = false;
+    this.SEARCH_DISPLAYED_MESSAGES = [];
+    
     if(this.searchQuery != ""){
+      document.querySelector("#messages-window-search").style.zIndex = "0";
       const req = {
         method: "GET",
         url: `/chat/${this.User.id}/${this.searchQuery}`,
         headers: {
           "Content-Type":"application/JSON"
+        },
+        params: {
+          limit: this.showOnLoadLimit
         }
       }
       $http(req)
@@ -150,13 +163,68 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
         filteredData.forEach(message=>{
           message.text = JSON.parse(message.text)
         });
-        this.DISPLAYED_MESSAGES = filteredData;
-        forceScrollToTheBottom();
+        this.SEARCH_DISPLAYED_MESSAGES = filteredData;
+        searchForceScrollToTheBottom();
+        if (serverResponse.data.length === 0 ) {
+          this.noSearchResults = true;
+        }
       })
     } else {
-      this.getLatestMessages();
-      hideMenu.call(this);
+      this.searchFieldSelected = true;
+      document.querySelector("#messages-window-search").style.zIndex = "-1";
+      SEARCH_DISPLAYED_MESSAGES = [];
+      let timer;
+      //
+      const searchInputJQ = angular.element(document.querySelector("#search-field input"));
+      searchInputJQ.bind('blur', ()=>{
+        this.searchFieldSelected = false;
+        this.hideMenu();
+      });
     }
+  }
+
+  function getSomePreviousSearchedMessages(){
+    const newOffset = this.SEARCH_DISPLAYED_MESSAGES.length;
+    const req = {
+      method: "GET",
+      url: `/chat/${this.User.id}/${this.searchQuery}`,
+      headers: {
+        "Content-Type":"application/JSON"
+      },
+      params: {
+        offset: newOffset,
+        limit: this.showOnLoadLimit
+      }
+    }
+    $http(req)
+      .then(serverResponse=>{
+        console.log(serverResponse);
+        if(serverResponse.data.fetched){
+          this.nothingToLoadSearch = true; // SEARCH !!!!!!!!!!!!!!!!!!!!!!!
+          const restMessages = serverResponse.data.lastRecords;
+          if(messagesSearchWindow.scrollTop <= 1){
+            messagesSearchWindow.scrollTop = messagesSearchWindow.scrollTop + 1; // shit fix
+          }
+          restMessages.forEach(message=>{ // make reverse on a server !!!!!!!!!!!!!!!!!!!!!!!
+            message.text = JSON.parse(message.text);
+            this.SEARCH_DISPLAYED_MESSAGES.unshift(message)
+          })
+          this.loadingInProgress = false;
+        } else {
+          const messagesPack = serverResponse.data;
+          if(messagesSearchWindow.scrollTop <= 1){
+            messagesSearchWindow.scrollTop = messagesSearchWindow.scrollTop + 1; // shit fix
+          }
+          messagesPack.forEach(message=>{ // make reverse on a server !!!!!!!!!!!!!!!!!!!!!!!
+            message.text = JSON.parse(message.text);
+            this.SEARCH_DISPLAYED_MESSAGES.unshift(message)
+          })
+          this.loadingInProgress = false;
+        }
+      })
+      .catch(err=>{
+        console.error(err);
+      })
   }
 
   function activateBot(){
@@ -538,7 +606,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     if(this.menuBeenHovered){
       hoveredOverMenuTimer = $interval(()=>{
         hoveredOverMenuTime ++;
-        if(hoveredOverMenuTime > 3){
+        if(hoveredOverMenuTime > 3 && !this.searchFieldSelected){
           if(!this.searchQuery){
             this.menuBeenHovered = false;
             this.searchFieldShown = false;
@@ -571,10 +639,10 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     this.searchFieldShown = !this.searchFieldShown
     if(this.searchQuery){
       this.searchQuery = "";
-      this.DISPLAYED_MESSAGES = [];
+      document.querySelector("#messages-window-search").style.zIndex = "-1";
       $timeout(()=>{
-        this.getLatestMessages();
-      },0)
+        this.SEARCH_DISPLAYED_MESSAGES = [];
+      },200)
     }
   }
 
@@ -585,6 +653,12 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
   function forceScrollToTheBottom(){
     $timeout(()=>{
       messagesWindow.scrollTop = messagesWindow.scrollHeight - messagesWindow.offsetHeight;
+    }, 0)
+  }
+  function searchForceScrollToTheBottom(){
+    const messagesSearchWindow = document.getElementById("messages-window-search");
+    $timeout(()=>{
+      messagesSearchWindow.scrollTop = messagesSearchWindow.scrollHeight - messagesSearchWindow.offsetHeight;
     }, 0)
   }
 
@@ -632,11 +706,11 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     const messagesShowed = latestUl.querySelectorAll(".repeated-list").length;
     if( lessThanPersentage && messagesShowed >= this.showOnLoadLimit &&
         !this.nothingToLoad && !this.loadingInProgress ){
-      const lastList = latestUl.querySelector("li");
+      // const lastList = latestUl.querySelector("li");
       this.loadingInProgress = true;
       $timeout(()=>{
         this.getSomePreviousMessages();
-      } , 500);
+      } , 300);
     }
     // cutting the list
     if(this.DISPLAYED_MESSAGES.length > 200){
@@ -668,6 +742,20 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
           this.notificationCount-- ;
         }
       }
+    }
+  }
+
+  messagesSearchWindow.onscroll = ()=>{
+    const lessThanPersentage = messagesSearchWindow.scrollTop / messagesSearchWindow.scrollHeight * 100 < 40 ;
+    const searchUL = document.querySelector("#search-messages");
+    const messagesShowed = searchUL.querySelectorAll(".repeated-list").length;
+    if( lessThanPersentage && messagesShowed >= this.showOnLoadLimit &&
+        !this.nothingToLoadSearch && !this.loadingInProgress ){
+      // const lastList = searchUL.querySelector("li");
+      this.loadingInProgress = true;
+      $timeout(()=>{
+        this.getSomePreviousSearchedMessages();
+      } , 300);
     }
   }
 }
