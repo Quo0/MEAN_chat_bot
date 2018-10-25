@@ -14,11 +14,11 @@
               const files = changeEvent.target.files[0].name;
               ngModel.$setViewValue(files);
               // set validity
-              scope.registrationForm[element[0].name].$setValidity('require', true)
+              scope.registrationForm[element[0].name].$setValidity('required', true)
             } else {
               ngModel.$setViewValue("");
               // set invalidity
-              scope.registrationForm[element[0].name].$setValidity('require', false)
+              scope.registrationForm[element[0].name].$setValidity('required', false)
             }
           })
         }

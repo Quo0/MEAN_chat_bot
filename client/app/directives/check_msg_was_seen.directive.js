@@ -24,7 +24,6 @@ angular
             });
             scope.$on('destroy', function(){
               listener();
-              "DESTRIYED"
             });
           };
         }

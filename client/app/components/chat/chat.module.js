@@ -116,7 +116,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
           }
           restMessages.forEach(message=>{
             message.text = JSON.parse(message.text);
-            this.DISPLAYED_MESSAGES.unshift(message)
+            this.DISPLAYED_MESSAGES.unshift(message);
           })
           this.loadingInProgress = false;
         } else {
@@ -126,7 +126,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
           }
           messagesPack.forEach(message=>{
             message.text = JSON.parse(message.text);
-            this.DISPLAYED_MESSAGES.unshift(message)
+            this.DISPLAYED_MESSAGES.unshift(message);
           })
           this.loadingInProgress = false;
         }
@@ -143,7 +143,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     this.nothingToLoadSearch = false;
     this.noSearchResults = false;
     this.SEARCH_DISPLAYED_MESSAGES = [];
-    
+
     if(this.searchQuery != ""){
       document.querySelector("#messages-window-search").style.zIndex = "0";
       const req = {
@@ -200,12 +200,12 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
       .then(serverResponse=>{
         console.log(serverResponse);
         if(serverResponse.data.fetched){
-          this.nothingToLoadSearch = true; // SEARCH !!!!!!!!!!!!!!!!!!!!!!!
+          this.nothingToLoadSearch = true;
           const restMessages = serverResponse.data.lastRecords;
           if(messagesSearchWindow.scrollTop <= 1){
             messagesSearchWindow.scrollTop = messagesSearchWindow.scrollTop + 1; // shit fix
           }
-          restMessages.forEach(message=>{ // make reverse on a server !!!!!!!!!!!!!!!!!!!!!!!
+          restMessages.forEach(message=>{
             message.text = JSON.parse(message.text);
             this.SEARCH_DISPLAYED_MESSAGES.unshift(message)
           })
@@ -215,7 +215,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
           if(messagesSearchWindow.scrollTop <= 1){
             messagesSearchWindow.scrollTop = messagesSearchWindow.scrollTop + 1; // shit fix
           }
-          messagesPack.forEach(message=>{ // make reverse on a server !!!!!!!!!!!!!!!!!!!!!!!
+          messagesPack.forEach(message=>{ 
             message.text = JSON.parse(message.text);
             this.SEARCH_DISPLAYED_MESSAGES.unshift(message)
           })

@@ -36,7 +36,7 @@ const fileFilter = function(req,file,cb){
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 1024 * 1024 * 5
+    fileSize: 1024 * 1024 * 555
   },
   fileFilter: fileFilter
 });
@@ -84,7 +84,7 @@ function registrationPOST(req,resp,next){
         failMessage: "Please set the profile image!"
       }
     }
-    let validationErrors = null;
+    let validationErrors = [];
     // validation
     req.checkBody("name", checkRules.name.failMessage)
       .matchRegExps(checkRules.name.regExp)

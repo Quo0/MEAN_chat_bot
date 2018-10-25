@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-//Models and Schemas
-const UserModel = require('../models/user.model');
+//Schemas
 const messageSchema = require('../models/message.schema');
 
 // routes
