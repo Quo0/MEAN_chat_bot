@@ -7,14 +7,13 @@
         <div class="action-buttons">
           <div id="search-field">
             <input type="text"
-            ng-model="chatCtrl.searchQuery"chatCtrl.hoveredOverMenuTime = 0
+            ng-model="chatCtrl.searchQuery"
             ng-model-options="{ debounce: 1500 }"
             ng-change="chatCtrl.onSearchQueryChange()"
             ng-show="chatCtrl.searchFieldShown">
             <div id="searchButton"
               ng-class="{notSearching: true, searching: chatCtrl.searchFieldShown}"
               ng-click="chatCtrl.clearSearchQuery()">
-              <!-- <input type="checkbox" ng-model="chatCtrl.searchFieldShown"></input> -->
             </div>
           </div>
           <button type="button" ng-click="chatCtrl.logOut()">Log out</button>
@@ -45,6 +44,7 @@
         </div>
       </div>
       <div id="messages-window-search">
+        <!-- templates for searched messages -->
         <div ng-include="'client/app/components/chat/html-partials/search_messages.partial.html'"></div>
       </div>
     </div>

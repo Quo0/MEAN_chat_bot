@@ -8,12 +8,13 @@ angular.module("chatScreen",[])
       "$interval",
       "addToMessageHistory",
       "queryNewsArticles",
+      "getBotsRandomFrase",
       chatScreenCtrl
     ],
     controllerAs: "chatCtrl"
   })
 
-function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHistory, queryNewsArticles){
+function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHistory, queryNewsArticles, getBotsRandomFrase){
   //redirection
   const currentUser = JSON.parse(localStorage.getItem("User"))
   if(!currentUser){ window.location.hash = "#/welcome"}
@@ -31,18 +32,19 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     query: /^BOT show( me){0,1}:\s(\w{1,}\s{0,1}){1,}$/,
     help: /^BOT help( me){0,1}/
   }
+
   let inactivityTime = 0;
   let inactivityTimer;
   let hoveredOverMenuTime = 0;
   let hoveredOverMenuTimer;
   let notScrolledUpTimer = 0;
+
   this.User = currentUser;
   this.DISPLAYED_MESSAGES = [];
   this.SEARCH_DISPLAYED_MESSAGES = [];
   this.showOnLoadLimit = 50;
   this.notificationCount = 0;
   //methods
-  this.activateBot = activateBot;
   this.onSubmit = onSubmit;
   this.onSearchQueryChange = onSearchQueryChange;
   this.clearSearchQuery = clearSearchQuery;
@@ -52,16 +54,18 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
   this.hideMenu = hideMenu;
   this.logOut = logOut;
   this.resetHoverOverMenuTimer = resetHoverOverMenuTimer;
-  //
-  this.getLatestMessages = getLatestMessages;
-  this.getSomePreviousMessages = getSomePreviousMessages;
-  this.getSomePreviousSearchedMessages = getSomePreviousSearchedMessages;
-  //
-  this.showBotsWelcome = showBotsWelcome;
-  this.getBotsRandomFrase = getBotsRandomFrase;
-  this.showBotsQueryAnswer = showBotsQueryAnswer;
-  this.getLatestMessages();
-  // this.activateBot();
+
+  // events
+  $rootScope.$on("botTyping", ()=> {
+    this.botIsBusy = true;
+    tryToScrollToTheBottom.call(this, getScrollBottomPosition() , "typing");
+  });
+
+  //init
+  this.atBottom = true; // need while loading first msgs chunk
+  getLatestMessages.call(this);
+
+
 
   // func bodies
 
@@ -78,20 +82,16 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     }
     $http(req)
       .then(serverResponse=>{
-        const latestMessages = serverResponse.data;
-        latestMessages.forEach(message=>{
-          message.text = JSON.parse(message.text)
-        });
-        this.DISPLAYED_MESSAGES = latestMessages;
-        forceScrollToTheBottom();
+        this.DISPLAYED_MESSAGES = parseServerData(serverResponse.data);
       })
       .then(()=>{
-        this.activateBot();
+        activateBot.call(this);
       })
       .catch(err=>{
         console.error(err);
       })
   }
+
   function getSomePreviousMessages(){
     const newOffset = this.DISPLAYED_MESSAGES.length;
     const req = {
@@ -110,31 +110,39 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
         console.log(serverResponse);
         if(serverResponse.data.fetched){
           this.nothingToLoad = true;
-          const restMessages = serverResponse.data.lastRecords;
           if(messagesWindow.scrollTop <= 1){
             messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
-          }
-          restMessages.forEach(message=>{
-            message.text = JSON.parse(message.text);
-            this.DISPLAYED_MESSAGES.unshift(message);
-          })
-          this.loadingInProgress = false;
+          };
+          parseAndUnshiftTo.call( this, serverResponse.data.lastRecords, this.DISPLAYED_MESSAGES );
         } else {
-          const messagesPack = serverResponse.data;
           if(messagesWindow.scrollTop <= 1){
             messagesWindow.scrollTop = messagesWindow.scrollTop + 1; // shit fix
           }
-          messagesPack.forEach(message=>{
-            message.text = JSON.parse(message.text);
-            this.DISPLAYED_MESSAGES.unshift(message);
-          })
-          this.loadingInProgress = false;
+          parseAndUnshiftTo.call( this, serverResponse.data, this.DISPLAYED_MESSAGES );
         }
       })
       .catch(err=>{
         console.error(err);
       })
   }
+
+  function parseServerData( inputArr ){
+    inputArr.forEach(message=>{
+      message.text = JSON.parse(message.text)
+    });
+    return inputArr;
+  };
+
+  function parseAndUnshiftTo( data , outputArr ) {
+    data.forEach(message=>{
+      message.text = JSON.parse(message.text);
+      outputArr.unshift(message);
+    })
+    this.loadingInProgress = false;
+  };
+
+
+
 
   //search;
 
@@ -159,11 +167,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
       $http(req)
       .then(serverResponse=>{
         console.log(serverResponse);
-        const filteredData = serverResponse.data;
-        filteredData.forEach(message=>{
-          message.text = JSON.parse(message.text)
-        });
-        this.SEARCH_DISPLAYED_MESSAGES = filteredData;
+        this.SEARCH_DISPLAYED_MESSAGES = parseServerData(serverResponse.data);
         searchForceScrollToTheBottom();
         if (serverResponse.data.length === 0 ) {
           this.noSearchResults = true;
@@ -171,9 +175,8 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
       })
     } else {
       this.searchFieldSelected = true;
-      document.querySelector("#messages-window-search").style.zIndex = "-1";
+      messagesSearchWindow.style.zIndex = "-1";
       SEARCH_DISPLAYED_MESSAGES = [];
-      let timer;
       //
       const searchInputJQ = angular.element(document.querySelector("#search-field input"));
       searchInputJQ.bind('blur', ()=>{
@@ -201,25 +204,15 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
         console.log(serverResponse);
         if(serverResponse.data.fetched){
           this.nothingToLoadSearch = true;
-          const restMessages = serverResponse.data.lastRecords;
           if(messagesSearchWindow.scrollTop <= 1){
             messagesSearchWindow.scrollTop = messagesSearchWindow.scrollTop + 1; // shit fix
           }
-          restMessages.forEach(message=>{
-            message.text = JSON.parse(message.text);
-            this.SEARCH_DISPLAYED_MESSAGES.unshift(message)
-          })
-          this.loadingInProgress = false;
+          parseAndUnshiftTo.call( this, serverResponse.data.lastRecords, this.SEARCH_DISPLAYED_MESSAGES );
         } else {
-          const messagesPack = serverResponse.data;
           if(messagesSearchWindow.scrollTop <= 1){
             messagesSearchWindow.scrollTop = messagesSearchWindow.scrollTop + 1; // shit fix
           }
-          messagesPack.forEach(message=>{ 
-            message.text = JSON.parse(message.text);
-            this.SEARCH_DISPLAYED_MESSAGES.unshift(message)
-          })
-          this.loadingInProgress = false;
+          parseAndUnshiftTo.call( this, serverResponse.data, this.SEARCH_DISPLAYED_MESSAGES );
         }
       })
       .catch(err=>{
@@ -231,10 +224,9 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     if( Date.parse(new Date()) - Date.parse(this.User.loginTime ) < 5000 ){
       $timeout(()=>{
         //typing... emulation
-        this.botIsBusy = true;
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition() , "typing");
+        $rootScope.$broadcast("botTyping");
         $timeout(()=>{
-          this.showBotsWelcome(this.User);
+          showBotsWelcome.call(this, this.User);
           this.botIsBusy = false;
           startInactivityTimer.call(this);
         }, 3500); // time he will type the msg
@@ -245,8 +237,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
       if( Date.parse(new Date()) - Date.parse(lastMsgDate) > 1 * 60 * 1000 ){
         $timeout(()=>{
           //typing... emulation
-          this.botIsBusy = true;
-          tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+          $rootScope.$broadcast("botTyping");
           $timeout(()=>{
             this.botIsBusy = false;
             greetAgain.call(this);
@@ -258,7 +249,43 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     tryToScrollToTheBottom.call(this, getScrollBottomPosition());
   }
 
-  // bots functions
+  // bots messages functions
+
+  function showBotsWelcome(User){
+    const url = 'https://newsapi.org/v2/top-headlines?' +
+    'country=us&' +
+    `apiKey=${API_KEY}`;
+    queryNewsArticles(url)
+      .then(newsApiResponse=>{
+        console.log(newsApiResponse);
+        const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
+        const randomArt = newsApiResponse.data.articles[randomN];
+        if(this.DISPLAYED_MESSAGES.length <= 1){
+          const message = composeMsg("welcome", randomArt)
+          return addToMessageHistory( User, "BOT" , message);
+        } else {
+          const message = composeMsg("welcomeAgain", randomArt)
+          return addToMessageHistory( User, "BOT" , message);
+        }
+      })
+      .then(serverResponse=>{
+        updateViewWithMessage.apply(this, [serverResponse, this.DISPLAYED_MESSAGES]);
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+  }
+
+  function greetAgain(){
+    const message = composeMsg("greetAgain");
+    addToMessageHistory( this.User, "BOT" , message)
+      .then(serverResponse=>{
+        updateViewWithMessage.apply(this, [serverResponse, this.DISPLAYED_MESSAGES]);
+      })
+      .catch(err=>{
+        console.log(err);
+      })
+  }
 
   function showBotsQueryAnswer(User, query){
     const fromMonth = (function(){
@@ -280,197 +307,14 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
         if(newsApiResponse.data.articles.length > 0){
           const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length)
           const randomArt = newsApiResponse.data.articles[randomN]
-          const botsRandomSearchQueryFrase = getBotsRandomFrase("queryAnswer");
-          message = {
-            type: "queryAnswer",
-            frases: botsRandomSearchQueryFrase,
-            article: randomArt
-          }
+          message = composeMsg("queryAnswer", randomArt);
         } else {
-          const botsRandomSearchQueryFailedFrase = getBotsRandomFrase("queryAnswerFailed");
-          message = {
-            type: "queryAnswerFailed",
-            frases: botsRandomSearchQueryFailedFrase
-          }
+          message = composeMsg("queryAnswerFailed");
         }
         return addToMessageHistory( User, "BOT" , message)
       })
       .then(serverResponse=>{
-        serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.DISPLAYED_MESSAGES.push(serverResponse.data);
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition());
-      })
-      .catch(err=>{
-        console.log(err);
-      })
-  }
-
-  function showBotsWelcome(User){
-    const url = 'https://newsapi.org/v2/top-headlines?' +
-    'country=us&' +
-    `apiKey=${API_KEY}`;
-    queryNewsArticles(url)
-      .then(newsApiResponse=>{
-        if(this.DISPLAYED_MESSAGES.length <= 1){
-          console.log(newsApiResponse);
-          const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
-          const randomArt = newsApiResponse.data.articles[randomN];
-          const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcome");
-          const message = {
-            type: "welcome",
-            frases: botsRandomWelcomeFrase,
-            article: randomArt
-          }
-          return addToMessageHistory( User, "BOT" , message);
-        } else {
-          console.log(newsApiResponse);
-          const randomN = Math.floor(Math.random() * newsApiResponse.data.articles.length);
-          const randomArt = newsApiResponse.data.articles[randomN];
-          const botsRandomWelcomeFrase = this.getBotsRandomFrase("welcomeAgain");
-          const message = {
-            type: "welcomeAgain",
-            frases: botsRandomWelcomeFrase,
-            article: randomArt
-          }
-          return addToMessageHistory( User, "BOT" , message);
-        }
-      })
-      .then(serverResponse=>{
-        serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.DISPLAYED_MESSAGES.push(serverResponse.data)
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition());
-      })
-      .catch(err=>{
-        console.log(err);
-      })
-  }
-  // bots frases
-  function getBotsRandomFrase(type){
-    let selectedTypeArr;
-    const welcomeFrases = [
-      [`W E L C O M E `,"=)"],
-      ["Welcome welcome welcome ! ! ! ! !",":Р"],
-      ["SUPERRRRRRRR welcome frase3","\\(*_*)/"],
-      ["OLOLOLOLOL welcome!!!","\\(+_+ )_"]
-    ]
-    const welcomeAgainFrases = [
-      ["Hey! I'm happy you loged in again!","Haven't seen you for ages =)"],
-      ["WHOOOOOW! Come on!","Didn't expect you will come back again :p","Wanna get some news?"]
-    ]
-    const greetAgain = [
-      ["Welcome back, my friend!","Want me to show you some more cool news?)"],
-      ["Hey!","Look who come back!)","Let me tell you more stories!!!"],
-      ["Hello again!","Looking for some nice news articles?"]
-    ]
-    const inactivityFrases = [
-      [`Are you here ???`],
-      ["Do you even reading that i write to you?!","_(._. )\\"]
-    ]
-    const queryAnswerFrases = [
-      ["Ok! Look what i found!"],
-      ["Probably... ", "Yes! This must be the rigth article!"]
-    ]
-    const queryAnswerFailedFrases = [
-      ["Looks like...", "Yeah... Unfortunately, i couldn't found anything"],
-      ["Unfortunately...","Hm! I cant find anything you are asking for"]
-    ]
-    const dontUnderstandFrases = [
-      [
-        "Sorry, but i don't understand you...",
-        "I dont speak human language very well"
-      ],
-      [
-        "Sorry, but i don't know such command and dont understand you",
-      ],
-      [
-        "Sorry, i don't understand you",
-        "Could you repeat please one more time?",
-
-      ],
-    ]
-    const helpFrases = [
-      [
-        "BOT show: 'your query'",
-        "BOT help",
-      ]
-    ]
-
-    if( type === "welcome" ){ selectedTypeArr = welcomeFrases} else
-    if( type === "welcomeAgain" ){ selectedTypeArr = welcomeAgainFrases} else
-    if( type === "greetAgain"){ selectedTypeArr = greetAgain} else
-    if( type === "inactivity" ){ selectedTypeArr = inactivityFrases} else
-    if( type === "queryAnswer" ){ selectedTypeArr = queryAnswerFrases} else
-    if( type === "queryAnswerFailed" ){ selectedTypeArr = queryAnswerFailedFrases} else
-    if( type === "dontUnderstand" ){ selectedTypeArr = dontUnderstandFrases } else
-    if( type === "help"){ selectedTypeArr = helpFrases }
-
-    return selectedTypeArr[Math.floor(Math.random() * selectedTypeArr.length)];
-  }
-
-  // user's functions
-
-  function onSubmit(){
-    if(this.newMessage){
-      if(this.newMessage.trim() != ""){
-        const currentMessage = this.newMessage;
-        this.newMessage = "";
-        inactivityTime = 0;
-        addToMessageHistory(this.User, this.User.name, currentMessage)
-          .then(serverResponse=>{
-            serverResponse.data.text = JSON.parse(serverResponse.data.text);
-            this.DISPLAYED_MESSAGES.push(serverResponse.data);
-            $interval.cancel(inactivityTimer);
-            startInactivityTimer.call(this);
-            forceScrollToTheBottom();
-          })
-          .then(()=>{
-            return $timeout(()=>{
-              this.botIsBusy = true;
-              tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
-            }, 1000)
-          })
-          .then(()=>{
-            if( currentMessage.match( botsCommands.query ) ){
-              const queryIndex = currentMessage.indexOf(":") + 2 ;
-              const query = currentMessage.slice(queryIndex);
-              $timeout(()=>{
-                this.botIsBusy = false;
-                this.showBotsQueryAnswer(this.User, query);
-              }, 3000)
-            } else
-            if( currentMessage.match( botsCommands.help ) ){
-              $timeout(()=>{
-                this.botIsBusy = false;
-                showBotHelp.call(this);
-              }, 2500)
-            } else {
-              $timeout(()=>{
-                this.botIsBusy = false;
-                showBotDontUnderstand.call(this);
-              }, 2000)
-            }
-          })
-          .then(()=>{
-
-          })
-          .catch(err=>{
-            console.log(err);
-          })
-      }
-    }
-  }
-
-  function greetAgain(){
-    const botsRandomHelpFrase = getBotsRandomFrase("greetAgain");
-    const message = {
-      type: "greetAgain",
-      frases: botsRandomHelpFrase
-    }
-    addToMessageHistory( this.User, "BOT" , message)
-      .then(serverResponse=>{
-        serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.DISPLAYED_MESSAGES.push(serverResponse.data);
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition());
+        updateViewWithMessage.apply(this, [serverResponse, this.DISPLAYED_MESSAGES]);
       })
       .catch(err=>{
         console.log(err);
@@ -485,9 +329,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     }
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
-        serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.DISPLAYED_MESSAGES.push(serverResponse.data);
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition());
+        updateViewWithMessage.apply(this, [serverResponse, this.DISPLAYED_MESSAGES]);
       })
       .catch(err=>{
         console.log(err);
@@ -507,9 +349,7 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     }
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
-        serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.DISPLAYED_MESSAGES.push(serverResponse.data);
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition());
+        updateViewWithMessage.apply(this, [serverResponse, this.DISPLAYED_MESSAGES]);
       })
       .catch(err=>{
         console.log(err);
@@ -524,13 +364,82 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     }
     addToMessageHistory( this.User, "BOT" , message)
       .then(serverResponse=>{
-        serverResponse.data.text = JSON.parse(serverResponse.data.text);
-        this.DISPLAYED_MESSAGES.push(serverResponse.data);
-        tryToScrollToTheBottom.call(this, getScrollBottomPosition());
+        updateViewWithMessage.apply(this, [serverResponse, this.DISPLAYED_MESSAGES]);
       })
       .catch(err=>{
         console.log(err);
       })
+  }
+
+  function composeMsg(type, article){
+    const botsRandomFrase = getBotsRandomFrase(type);
+    if(article){
+      return {
+        type: type,
+        frases: botsRandomFrase,
+        article: article
+      }
+    } else {
+      return {
+        type: type,
+        frases: botsRandomFrase
+      }
+    }
+  }
+  function updateViewWithMessage(serverResponse, outArr, force){
+    serverResponse.data.text = JSON.parse(serverResponse.data.text);
+    outArr.push(serverResponse.data);
+    if( force ){
+      forceScrollToTheBottom();
+    } else {
+      tryToScrollToTheBottom.call(this, getScrollBottomPosition());
+    }
+  }
+
+
+  // user's functions
+
+  function onSubmit(){
+    if(this.newMessage && this.newMessage.trim() != ""){
+      const currentMessage = this.newMessage;
+      this.newMessage = "";
+      inactivityTime = 0;
+      addToMessageHistory(this.User, this.User.name, currentMessage)
+        .then(serverResponse=>{
+          updateViewWithMessage.apply(this, [serverResponse, this.DISPLAYED_MESSAGES, "force"]);
+          $interval.cancel(inactivityTimer);
+          startInactivityTimer.call(this);
+        })
+        .then(()=>{
+          return $timeout(()=>{
+            $rootScope.$broadcast("botTyping");
+          }, 1000)
+        })
+        .then(()=>{
+          if( currentMessage.match( botsCommands.query ) ){
+            const queryIndex = currentMessage.indexOf(":") + 2 ;
+            const query = currentMessage.slice(queryIndex);
+            $timeout(()=>{
+              this.botIsBusy = false;
+              showBotsQueryAnswer.call(this, this.User, query);
+            }, 3000)
+          } else
+          if( currentMessage.match( botsCommands.help ) ){
+            $timeout(()=>{
+              this.botIsBusy = false;
+              showBotHelp.call(this);
+            }, 2500)
+          } else {
+            $timeout(()=>{
+              this.botIsBusy = false;
+              showBotDontUnderstand.call(this);
+            }, 2000)
+          }
+        })
+        .catch(err=>{
+          console.log(err);
+        })
+    }
   }
 
   function startInactivityTimer(){
@@ -544,9 +453,8 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
         if(ignoreTimes > 1){
           $timeout(()=>{
             //typing... emulation
-            this.botIsBusy = true;
             inactivityTime = 0;
-            tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+            $rootScope.$broadcast("botTyping");
             $timeout(()=>{
               showBotsInactivity.call(this,"OK! i can see you dont have time or smthg...");
               $interval.cancel(inactivityTimer);
@@ -559,9 +467,8 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
         } else {
           $timeout(()=>{
             //typing... emulation
-            this.botIsBusy = true;
             inactivityTime = 0;
-            tryToScrollToTheBottom.call(this, getScrollBottomPosition(), "typing");
+            $rootScope.$broadcast("botTyping");
             $timeout(()=>{
               this.botIsBusy = false;
               showBotsInactivity.call(this);
@@ -589,13 +496,10 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
       })();
       promice
         .then(()=>{
-          return $timeout(()=>{
-            // wait a bit before the hiding burger
-          }, 200)
-        })
-        .then(()=>{
-          burger.style.display = "none";
-          actionButtons.style.display = "flex";
+          $timeout(()=>{
+            burger.style.display = "none";
+            actionButtons.style.display = "flex";
+          }, 300);
         })
         .catch(err=>{
           console.error(err);
@@ -664,12 +568,10 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
 
   function tryToScrollToTheBottom(prevPosition, typing){
     if(prevPosition <= 1){
-      this.atBottom = true;
       $timeout(()=>{
         messagesWindow.scrollTop = messagesWindow.scrollHeight - messagesWindow.offsetHeight;
       }, 0)
     } else {
-      this.atBottom = false;
       if(!typing){
         this.notificationCount++;
       }
@@ -693,7 +595,6 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     // rules for BOTTOM
     if(getScrollBottomPosition() <= 1){
       this.atBottom = true;
-      $rootScope.$broadcast("atBottom");
       $timeout(()=>{
         this.notificationCount = 0; // becouse of inactivityTimer
       },0)
@@ -706,10 +607,9 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     const messagesShowed = latestUl.querySelectorAll(".repeated-list").length;
     if( lessThanPersentage && messagesShowed >= this.showOnLoadLimit &&
         !this.nothingToLoad && !this.loadingInProgress ){
-      // const lastList = latestUl.querySelector("li");
       this.loadingInProgress = true;
       $timeout(()=>{
-        this.getSomePreviousMessages();
+        getSomePreviousMessages.call(this);
       } , 300);
     }
     // cutting the list
@@ -751,10 +651,9 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
     const messagesShowed = searchUL.querySelectorAll(".repeated-list").length;
     if( lessThanPersentage && messagesShowed >= this.showOnLoadLimit &&
         !this.nothingToLoadSearch && !this.loadingInProgress ){
-      // const lastList = searchUL.querySelector("li");
       this.loadingInProgress = true;
       $timeout(()=>{
-        this.getSomePreviousSearchedMessages();
+        getSomePreviousSearchedMessages.call(this);
       } , 300);
     }
   }

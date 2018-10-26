@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server/server"
+    "start": "nodemon server/server",
+    "test": "jasmine"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "grunt-autoprefixer": "^3.0.4",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-sass": "^3.0.1",
+    "jasmine": "^3.2.0",
     "node-sass": "^4.9.3",
     "nodemon": "^1.18.4"
   }
