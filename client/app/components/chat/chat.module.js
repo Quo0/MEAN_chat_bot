@@ -590,11 +590,12 @@ function chatScreenCtrl($rootScope, $http, $timeout, $interval, addToMessageHist
       this.newMessage+="";
     }
   }
-
+  
   messagesWindow.onscroll = ()=>{
     // rules for BOTTOM
     if(getScrollBottomPosition() <= 1){
       this.atBottom = true;
+      $rootScope.$broadcast("atBottom");
       $timeout(()=>{
         this.notificationCount = 0; // becouse of inactivityTimer
       },0)

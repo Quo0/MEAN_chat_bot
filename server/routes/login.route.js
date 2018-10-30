@@ -30,7 +30,7 @@ function loginPOST(req,resp,next){
       } else {
         resp.send({
           currentUserData: data,
-          success: false
+          success: true
         })
       }
     }

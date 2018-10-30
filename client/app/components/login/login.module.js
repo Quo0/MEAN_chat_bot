@@ -34,7 +34,7 @@ function loginScreenCtrl($http, $timeout){
           }))
           this.currentUser = serverResponse.data.currentUserData.name
           $timeout(()=>{
-            window.location.hash = "#/chat"
+            window.location.hash = "#/chat" ;
           }, 2000)
         }
       })

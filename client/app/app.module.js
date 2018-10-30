@@ -4,6 +4,6 @@ angular.module("chatApp",[
   //
   "welcomeScreen",
   "registrationScreen",
-  "loginScreen",
+    "loginScreen",
   "chatScreen"
 ]);
