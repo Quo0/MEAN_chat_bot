@@ -1,6 +1,6 @@
 describe("Testing <login-screen>", function() {
   let logCtrl, $httpBackend ;
-  let httpresult ;
+  let httpResult ;
 
   // MOCKING HTTP RESPONSES AND LOCALSTORAGE
 
@@ -33,7 +33,7 @@ describe("Testing <login-screen>", function() {
     logCtrl = $componentController("loginScreen");
     $httpBackend = _$httpBackend_;
     //default server respose is positive
-    httpresult = $httpBackend.when('POST', '/login', {
+    httpResult = $httpBackend.when('POST', '/login', {
                   name: "test",
                   password: "testP"
                 })
@@ -61,7 +61,7 @@ describe("Testing <login-screen>", function() {
 
   describe("-> Testing empty POST requests.", function() {
     beforeEach(function() {
-      httpresult.respond(200, JSON.stringify(negHTTP_no_userName));
+      httpResult.respond(200, JSON.stringify(negHTTP_no_userName));
       logCtrl.onSubmit();
       $httpBackend.flush();
     });
@@ -73,7 +73,7 @@ describe("Testing <login-screen>", function() {
 
   describe("-> Testing POST request with wrong Username. ", function(){
     beforeEach(function() {
-      httpresult.respond(200, JSON.stringify(negHTTP_no_userName));
+      httpResult.respond(200, JSON.stringify(negHTTP_no_userName));
       logCtrl.onSubmit();
       $httpBackend.flush();
     });
@@ -85,7 +85,7 @@ describe("Testing <login-screen>", function() {
 
   describe("-> Testing POST request with wrong Password.", function(){
     beforeEach(function() {
-      httpresult.respond(200, JSON.stringify(negHTTP_no_pwd));
+      httpResult.respond(200, JSON.stringify(negHTTP_no_pwd));
       logCtrl.onSubmit();
       $httpBackend.flush();
     });

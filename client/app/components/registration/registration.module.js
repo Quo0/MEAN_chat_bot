@@ -14,7 +14,7 @@ function registrationScreenCtrl($http, $scope, $timeout){
   this.onSubmit = onSubmit;
   this.onInputChange = onInputChange;
   this.showValidationTips = showValidationTips;
-  //regExps
+  // regExps
   this.checkRules = {
     name: {
       regExp: /^[\w\s]{4,12}$/,
@@ -46,18 +46,30 @@ function registrationScreenCtrl($http, $scope, $timeout){
   }
 
   // func bodies
+  function generateFormData() {
+    const formData = new FormData;
+    for(prop in this.newUser){
+      console.log(this.newUser[prop])
+      formData.append(prop, this.newUser[prop]);
+    }
+    //forming file
+    const fileInput = document.getElementById("avatar");
+    let file;
+    if(fileInput){
+      let f = fileInput.files[0] ;
+      if(!f){ file = "" } else {file = fileInput.files[0]}
+    } else {
+      file = "" ;
+    }
+    // we form file this stupid way becouse we need to
+    // avoid query DOM in Unit test
+    formData.append("avatar", file);
+    return formData ;
+  };
 
   function onSubmit(){
     this.serverRegErrors = {};
-    // forming formData
-    const formData = new FormData;
-    for(prop in this.newUser){
-      formData.append(prop, this.newUser[prop]);
-    }
-    let file = document.getElementById("avatar").files[0]
-    if(!file){ file = "" }; // to get rid of 'undefined' string on a server
-                           // at the req.body.avatar
-    formData.append("avatar", file);
+    const formData = generateFormData.call(this);
     //
     const req = {
       method: "POST",
@@ -69,7 +81,7 @@ function registrationScreenCtrl($http, $scope, $timeout){
     };
     $http(req)
       .then(serverResponse=>{
-        console.log(serverResponse)
+        // console.log(serverResponse)
         if(serverResponse.data.errors){
           serverResponse.data.errors.forEach(err=>{
             this.serverRegErrors[err.param] = err.msg
@@ -78,7 +90,7 @@ function registrationScreenCtrl($http, $scope, $timeout){
         } else {
           this.registrationSucceed = true;
           $timeout(()=>{
-            window.location.hash = "#/login"
+            window.location.hash = "#/login" ;
           }, 2000)
         }
       })
@@ -95,6 +107,7 @@ function registrationScreenCtrl($http, $scope, $timeout){
   }
 
   function showValidationTips(fieldName){
+    // console.log("showValidationTips");
     if($scope.registrationForm[fieldName]){
       return $scope.registrationForm[fieldName].$valid === false  || this.serverRegErrors[fieldName]
     } else {

@@ -20,7 +20,9 @@ module.exports = function(config) {
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/angular-animate/angular-animate.js',
       'client/**/*.module.js',
-      'client/**/*.spec.js'
+      'client/**/*.spec.js',
+      'client/**/*.html'
+
     ],
 
 
@@ -32,8 +34,15 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      "client/**/*.html": ["ng-html2js"]
     },
-
+    ngHtml2JsPreprocessor: {
+      //
+      // Make up a module name to contain your templates.
+      // We will use this name in the jasmine test code.
+      // For advanced configs, see https://github.com/karma-runner/karma-ng-html2js-preprocessor
+      moduleName: 'mock_templates',
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
